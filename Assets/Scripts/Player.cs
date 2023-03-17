@@ -33,6 +33,8 @@ public class Player : MonoBehaviour{
     private bool _wallJumping;
     private float _wallJumpTime;
     private bool horizontalInputBool = true;
+    private float _dashCooldown;
+    private bool canDash;
     
     [SerializeField]
     private float _maxgravityScale = 30;
@@ -40,6 +42,7 @@ public class Player : MonoBehaviour{
     
     void Start(){
         rb2d = GetComponent<Rigidbody2D>();
+        Assert.IsNotNull(rb2d);
     }
 
 
@@ -54,7 +57,7 @@ public class Player : MonoBehaviour{
         Vector2 movement = new Vector2(_speed*horizontalInput, 0);
         //rb2d.AddForce(movement);
         rb2d.velocity = movement*_speed;
-
+        
         if(isGrounded){
             _falling = false;
             _gravityScale = 3;
@@ -65,11 +68,21 @@ public class Player : MonoBehaviour{
 
         if (Input.GetButtonDown("Jump") && isGrounded && !jumped){
             // rb2d.AddForce(new Vector2(0, 5), ForceMode2D.Impulse);
-            Debug.Log("JUMP");
             jumping = true;
             _jumpTime = 0;
             isGrounded = false;
             jumped = true;
+        }
+        if(Input.GetKeyDown(KeyCode.X)&&canDash){
+            _speed=6;
+            _dashCooldown = 2;
+            canDash=false;
+        }
+        if(_dashCooldown > 0){
+            _dashCooldown -= Time.deltaTime;
+        }
+        else{
+            _speed=3;
         }
 
         if(jumping){
@@ -122,20 +135,18 @@ public class Player : MonoBehaviour{
 
      private void OnCollisionEnter2D(Collision2D collision){
         if (collision.gameObject.CompareTag("Floor")){
-            Debug.Log("Floor");
             _falling = false;
             isGrounded = true;
             jumped = false;
             _gravityScale = 3;
         }
         if(collision.gameObject.CompareTag("Wall")){
-            Debug.Log("Wall");
+            
             canWallJump = true;
             _wallpoint = collision.GetContact(0);
             // Debug.DrawRay(_wallpoint.point, _wallpoint.normal, Color.green, 20, false);
         }
         if(collision.gameObject.CompareTag("Spikes")){
-            Debug.Log("Spikes");
             transform.position = spawnPoint.position;
             transform.rotation = spawnPoint.rotation;
             rb2d.velocity = Vector2.zero;
@@ -144,7 +155,7 @@ public class Player : MonoBehaviour{
     }
     private void OnCollisionExit2D(Collision2D collision){
         if(collision.gameObject.CompareTag("Wall")){
-            Debug.Log("Wall");
+            
             canWallJump = false;
         }
     }
