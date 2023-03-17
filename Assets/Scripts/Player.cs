@@ -14,7 +14,7 @@ public class Player : MonoBehaviour{
     private int _jumpAmount=9;
 
     [SerializeField]
-    private int _gravityScale=3;
+    private float _gravityScale=3;
 
     [SerializeField]
     private int _wallJumpForce = 30;
@@ -27,8 +27,15 @@ public class Player : MonoBehaviour{
     private bool _falling = false;
     float _jumpTime;
     private float _buttonTime = .25f;
+    private float _jumpButtonTime = .25f;
     public ContactPoint2D _wallpoint; 
     private float horizontalInput;
+    private bool _wallJumping;
+    private float _wallJumpTime;
+    private bool horizontalInputBool = true;
+    
+    [SerializeField]
+    private float _maxgravityScale = 30;
     
     
     void Start(){
@@ -37,7 +44,13 @@ public class Player : MonoBehaviour{
 
 
     void Update(){
-        horizontalInput = Input.GetAxis("Horizontal");
+        if(horizontalInputBool){
+            horizontalInput = Input.GetAxis("Horizontal");
+        }
+        else{
+            horizontalInput = 0;
+        }
+
         Vector2 movement = new Vector2(_speed*horizontalInput, 0);
         //rb2d.AddForce(movement);
         rb2d.velocity = movement*_speed;
@@ -70,22 +83,40 @@ public class Player : MonoBehaviour{
         }
 
         if(_falling){
-            //_gravityScale = _gravityScale * 1.5f;
-            _gravityScale = 22;
+            if(_gravityScale < _maxgravityScale && !canWallJump){
+                _gravityScale = _gravityScale * 1.3f;
+            }
+            if(canWallJump){
+                _gravityScale = 19;
+            }
         }
         else{
             _gravityScale = 3;
         }
 
+
         if(Input.GetButtonDown("Jump") && canWallJump){
             Debug.Log("Wall Jumping");
-            
-            
-            StartCoroutine(DisableInput());
-            rb2d.velocity = new Vector2(_wallpoint.normal.x * _wallJumpForce, _jumpAmount + 1);
+        
             isGrounded = false;
+            _wallJumping = true;
+            _falling = false;
+            _gravityScale = 3;
+            _jumpTime = 0;
         }
 
+        if(_wallJumping){
+            rb2d.velocity = new Vector2(_wallpoint.normal.x * _speed * _wallJumpForce, _jumpAmount + 1);
+            _wallJumpTime += Time.deltaTime;
+            horizontalInputBool = false;
+        }
+
+        if(_wallJumpTime > _jumpButtonTime){
+            _wallJumping = false;
+            _falling = true;
+            _wallJumpTime = 0;
+            horizontalInputBool = true;
+        }
     }
 
 
@@ -101,7 +132,7 @@ public class Player : MonoBehaviour{
             Debug.Log("Wall");
             canWallJump = true;
             _wallpoint = collision.GetContact(0);
-            Debug.DrawRay(_wallpoint.point, _wallpoint.normal, Color.green, 20, false);
+            // Debug.DrawRay(_wallpoint.point, _wallpoint.normal, Color.green, 20, false);
         }
         if(collision.gameObject.CompareTag("Spikes")){
             Debug.Log("Spikes");
@@ -116,11 +147,5 @@ public class Player : MonoBehaviour{
             Debug.Log("Wall");
             canWallJump = false;
         }
-    }
-
-    IEnumerator DisableInput(){
-        Debug.Log("Coroutine");
-        horizontalInput = 0;
-        yield return new WaitForSeconds(.3f);
     }
 }
