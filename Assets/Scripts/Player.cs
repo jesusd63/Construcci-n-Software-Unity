@@ -16,6 +16,9 @@ public class Player : MonoBehaviour{
     [SerializeField]
     private int _gravityScale=3;
 
+    [SerializeField]
+    private int _wallJumpForce = 30;
+
     private bool isGrounded=false;
     private bool jumped=false;
     private bool canWallJump;
@@ -24,6 +27,8 @@ public class Player : MonoBehaviour{
     private bool _falling = false;
     float _jumpTime;
     private float _buttonTime = .25f;
+    public ContactPoint2D _wallpoint; 
+    private float horizontalInput;
     
     
     void Start(){
@@ -32,7 +37,7 @@ public class Player : MonoBehaviour{
 
 
     void Update(){
-        float horizontalInput = Input.GetAxis("Horizontal");
+        horizontalInput = Input.GetAxis("Horizontal");
         Vector2 movement = new Vector2(_speed*horizontalInput, 0);
         //rb2d.AddForce(movement);
         rb2d.velocity = movement*_speed;
@@ -76,11 +81,8 @@ public class Player : MonoBehaviour{
             Debug.Log("Wall Jumping");
             
             
-            //1. IMPLEMENTAR FUNCIÓN PARA DESACTIVAR EL INPUT POR POCO TIEMPO AL HACER EL WALL JUMP
-
-            rb2d.AddForce(new Vector2(-100, 100), ForceMode2D.Impulse);
-            //Vector2 jumpy = new Vector2(-10, 5);
-            //rb2d.velocity = movement*_speed;
+            StartCoroutine(DisableInput());
+            rb2d.velocity = new Vector2(_wallpoint.normal.x * _wallJumpForce, _jumpAmount + 1);
             isGrounded = false;
         }
 
@@ -98,6 +100,8 @@ public class Player : MonoBehaviour{
         if(collision.gameObject.CompareTag("Wall")){
             Debug.Log("Wall");
             canWallJump = true;
+            _wallpoint = collision.GetContact(0);
+            Debug.DrawRay(_wallpoint.point, _wallpoint.normal, Color.green, 20, false);
         }
         if(collision.gameObject.CompareTag("Spikes")){
             Debug.Log("Spikes");
@@ -112,5 +116,11 @@ public class Player : MonoBehaviour{
             Debug.Log("Wall");
             canWallJump = false;
         }
+    }
+
+    IEnumerator DisableInput(){
+        Debug.Log("Coroutine");
+        horizontalInput = 0;
+        yield return new WaitForSeconds(.3f);
     }
 }
