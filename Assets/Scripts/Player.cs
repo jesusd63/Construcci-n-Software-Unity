@@ -33,6 +33,7 @@ public class Player : MonoBehaviour{
     private bool _wallJumping;
     private float _wallJumpTime;
     private bool horizontalInputBool = true;
+    private float _dashing;
     private float _dashCooldown;
     private bool canDash;
     
@@ -65,24 +66,13 @@ public class Player : MonoBehaviour{
 
         rb2d.AddForce(Physics.gravity * (_gravityScale - 1) * rb2d.mass);
 
-
+        //Jump
         if (Input.GetButtonDown("Jump") && isGrounded && !jumped){
             // rb2d.AddForce(new Vector2(0, 5), ForceMode2D.Impulse);
             jumping = true;
             _jumpTime = 0;
             isGrounded = false;
             jumped = true;
-        }
-        if(Input.GetKeyDown(KeyCode.X)&&canDash){
-            _speed=6;
-            _dashCooldown = 2;
-            canDash=false;
-        }
-        if(_dashCooldown > 0){
-            _dashCooldown -= Time.deltaTime;
-        }
-        else{
-            _speed=3;
         }
 
         if(jumping){
@@ -107,7 +97,7 @@ public class Player : MonoBehaviour{
             _gravityScale = 3;
         }
 
-
+        //Wall Jump
         if(Input.GetButtonDown("Jump") && canWallJump){
             Debug.Log("Wall Jumping");
         
@@ -129,6 +119,24 @@ public class Player : MonoBehaviour{
             _falling = true;
             _wallJumpTime = 0;
             horizontalInputBool = true;
+        }
+        //Dash
+        if(Input.GetKeyDown(KeyCode.X)&&canDash){
+            _speed=6;
+            _dashing = 2;
+            canDash=false;
+        }
+        if(_dashing > 0){
+            _dashing -= Time.deltaTime;
+        }else{
+            _speed=3;
+            _dashCooldown=10;
+
+        }
+        if(_dashCooldown > 0){
+            _dashCooldown -= Time.deltaTime;
+        }else{
+            canDash=true;
         }
     }
 
