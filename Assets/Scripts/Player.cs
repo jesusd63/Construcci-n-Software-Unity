@@ -30,12 +30,17 @@ public class Player : MonoBehaviour{
     private float _jumpButtonTime = .25f;
     public ContactPoint2D _wallpoint; 
     private float horizontalInput;
+    private float verticalInput;
     private bool _wallJumping;
     private float _wallJumpTime;
     private bool horizontalInputBool = true;
-    private float _dashing;
+
+    private bool _dashing;
     private float _dashCooldown;
     private bool canDash;
+    private float _dashingTime;
+    [SerializeField]
+    private float _dashForce = 3.5f;
     
     [SerializeField]
     private float _maxgravityScale = 30;
@@ -50,6 +55,7 @@ public class Player : MonoBehaviour{
     void Update(){
         if(horizontalInputBool){
             horizontalInput = Input.GetAxis("Horizontal");
+            verticalInput = Input.GetAxis("Vertical");
         }
         else{
             horizontalInput = 0;
@@ -62,6 +68,12 @@ public class Player : MonoBehaviour{
         if(isGrounded){
             _falling = false;
             _gravityScale = 3;
+            canDash = true;
+        }
+        else{
+            if(!jumping && !_wallJumping && !_dashing){
+                _falling = true;
+            }
         }
 
         rb2d.AddForce(Physics.gravity * (_gravityScale - 1) * rb2d.mass);
@@ -120,24 +132,46 @@ public class Player : MonoBehaviour{
             _wallJumpTime = 0;
             horizontalInputBool = true;
         }
+
         //Dash
-        if(Input.GetKeyDown(KeyCode.X)&&canDash){
-            _speed=6;
-            _dashing = 2;
+        if(Input.GetKeyDown(KeyCode.X) && canDash){
+            Debug.Log("Dash");
+            _dashing = true;
             canDash=false;
+            _gravityScale = 0;
         }
-        if(_dashing > 0){
-            _dashing -= Time.deltaTime;
-        }else{
+
+        if(_dashing){
+            if(horizontalInput == 0 && verticalInput == 0){
+                rb2d.velocity = new Vector2(transform.localScale.x * _speed * _dashForce, 0);
+            }
+            else{
+                rb2d.velocity = new Vector2(horizontalInput * _speed * _dashForce, verticalInput * _speed * _dashForce);
+            }
+            _dashingTime += Time.deltaTime;
+            horizontalInputBool = false;
+        }
+
+        if(_dashingTime > .25){
+            _dashing = false;
+            _dashingTime = 0;
+            horizontalInputBool = true;
+        }
+
+        /*
+        else{
             _speed=3;
             _dashCooldown=10;
-
         }
+
         if(_dashCooldown > 0){
             _dashCooldown -= Time.deltaTime;
-        }else{
+        }
+
+        else{
             canDash=true;
         }
+        */
     }
 
 
