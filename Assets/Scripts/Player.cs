@@ -138,42 +138,22 @@ public class Player : MonoBehaviour{
             Debug.Log("Dash");
             _dashing = true;
             canDash=false;
-            _gravityScale = 0;
-        }
-
+            rb2d.velocity = Vector2.zero;
         if(_dashing){
-            if(horizontalInput == 0 && verticalInput == 0){
-                rb2d.velocity = new Vector2(transform.localScale.x * _speed * _dashForce, 0);
-            }
-            else{
-                rb2d.velocity = new Vector2(horizontalInput * _speed * _dashForce, verticalInput * _speed * _dashForce);
-            }
+            Debug.Log("Dashing");
+            rb2d.velocity = Vector2.zero;
+            rb2d.velocity = new Vector2(rb2d.velocity.x + 20*_speed , rb2d.velocity.y);
             _dashingTime += Time.deltaTime;
-            horizontalInputBool = false;
         }
-
         if(_dashingTime > .25){
             _dashing = false;
             _dashingTime = 0;
             horizontalInputBool = true;
         }
 
-        /*
-        else{
-            _speed=3;
-            _dashCooldown=10;
-        }
-
-        if(_dashCooldown > 0){
-            _dashCooldown -= Time.deltaTime;
-        }
-
-        else{
-            canDash=true;
-        }
-        */
     }
-
+}
+  
 
      private void OnCollisionEnter2D(Collision2D collision){
         if (collision.gameObject.CompareTag("Floor")){
