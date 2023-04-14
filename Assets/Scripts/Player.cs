@@ -43,7 +43,7 @@ public class Player : MonoBehaviour{
     private float _dashForce = 3.5f;
     
     [SerializeField]
-    private float _maxgravityScale = 30;
+    private float _maxgravityScale = 8;
     
     
     void Start(){
@@ -51,23 +51,38 @@ public class Player : MonoBehaviour{
         Assert.IsNotNull(rb2d);
     }
 
-
     void Update(){
-        if(horizontalInputBool){
+        if(horizontalInputBool && !_dashing){
             horizontalInput = Input.GetAxis("Horizontal");
             verticalInput = Input.GetAxis("Vertical");
         }
         else{
             horizontalInput = 0;
         }
+        Move();
 
+        CheckGrounded();
+
+        //Gravity
+        rb2d.AddForce(Physics.gravity * (_gravityScale) * rb2d.mass);
+
+        Jump();
+
+        WallJump();
+
+        Dash();
+    }
+
+    void Move(){
         Vector2 movement = new Vector2(_speed*horizontalInput, 0);
         //rb2d.AddForce(movement);
         rb2d.velocity = movement*_speed;
-        
+    }
+
+    void CheckGrounded(){
         if(isGrounded){
-            _falling = false;
             _gravityScale = 3;
+            _falling = false;
             canDash = true;
         }
         else{
@@ -75,95 +90,88 @@ public class Player : MonoBehaviour{
                 _falling = true;
             }
         }
+    }
 
-        rb2d.AddForce(Physics.gravity * (_gravityScale - 1) * rb2d.mass);
 
-        //Jump
-        if (Input.GetButtonDown("Jump") && isGrounded && !jumped){
-            // rb2d.AddForce(new Vector2(0, 5), ForceMode2D.Impulse);
+    void Jump(){
+        if (Input.GetButtonDown("Jump") && isGrounded && !jumped && !_dashing){
+            rb2d.AddForce(new Vector2(0, 5), ForceMode2D.Impulse);
             jumping = true;
             _jumpTime = 0;
             isGrounded = false;
             jumped = true;
         }
-
         if(jumping){
             rb2d.velocity = new Vector2(rb2d.velocity.x, _jumpAmount + 1);
             _jumpTime += Time.deltaTime;
         }
 
-        if(Input.GetButtonUp("Jump") | _jumpTime > _buttonTime){
+        if( _jumpTime > _buttonTime){
             jumping = false;
             _falling = true;
         }
-
         if(_falling){
-            if(_gravityScale < _maxgravityScale && !canWallJump){
-                _gravityScale = _gravityScale * 1.3f;
-            }
-            if(canWallJump){
-                _gravityScale = 19;
+            if(_gravityScale < _maxgravityScale){
+                _gravityScale += 0.5f;
             }
         }
-        else{
+        if(!_falling){
             _gravityScale = 3;
         }
+    }
 
-        //Wall Jump
+    void WallJump(){
         if(Input.GetButtonDown("Jump") && canWallJump){
             Debug.Log("Wall Jumping");
-        
             isGrounded = false;
             _wallJumping = true;
             _falling = false;
             _gravityScale = 3;
             _jumpTime = 0;
         }
-
         if(_wallJumping){
             rb2d.velocity = new Vector2(_wallpoint.normal.x * _speed * _wallJumpForce, _jumpAmount + 1);
             _wallJumpTime += Time.deltaTime;
             horizontalInputBool = false;
         }
-
         if(_wallJumpTime > _jumpButtonTime){
             _wallJumping = false;
             _falling = true;
             _wallJumpTime = 0;
             horizontalInputBool = true;
         }
+    }
 
-        //Dash
+    void Dash(){
         if(Input.GetKeyDown(KeyCode.X) && canDash){
-            Debug.Log("Dash");
             _dashing = true;
             canDash=false;
-            rb2d.velocity = Vector2.zero;
+            //If velocity is jump
+            if(rb2d.velocity.y > 0){
+                rb2d.velocity = new Vector2(0, rb2d.velocity.y);
+            }else{
+                rb2d.velocity = Vector2.zero;
+            }
+        }
         if(_dashing){
-            Debug.Log("Dashing");
             rb2d.velocity = Vector2.zero;
-            rb2d.velocity = new Vector2(rb2d.velocity.x + 20*_speed , rb2d.velocity.y);
+            rb2d.velocity = new Vector2(rb2d.velocity.x + _dashForce*_speed , rb2d.velocity.y);
             _dashingTime += Time.deltaTime;
         }
         if(_dashingTime > .25){
             _dashing = false;
             _dashingTime = 0;
-            horizontalInputBool = true;
         }
-
     }
-}
-  
-
      private void OnCollisionEnter2D(Collision2D collision){
         if (collision.gameObject.CompareTag("Floor")){
+            _gravityScale = 3;
+            jumping = false;
             _falling = false;
             isGrounded = true;
             jumped = false;
-            _gravityScale = 3;
         }
         if(collision.gameObject.CompareTag("Wall")){
-            
             canWallJump = true;
             _wallpoint = collision.GetContact(0);
             // Debug.DrawRay(_wallpoint.point, _wallpoint.normal, Color.green, 20, false);
