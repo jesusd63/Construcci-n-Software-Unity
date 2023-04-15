@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour{
     private Rigidbody2D rb2d;
@@ -44,6 +45,8 @@ public class Player : MonoBehaviour{
     
     [SerializeField]
     private float _maxgravityScale = 8;
+
+    private int _lives = 3;
     
     
     void Start(){
@@ -71,6 +74,8 @@ public class Player : MonoBehaviour{
         WallJump();
 
         Dash();
+
+        Lives();
     }
 
     void Move(){
@@ -163,6 +168,11 @@ public class Player : MonoBehaviour{
             _dashingTime = 0;
         }
     }
+    void Lives(){
+        if(_lives <= 0){
+            SceneManager.LoadScene("Inicio");
+        }
+    }
      private void OnCollisionEnter2D(Collision2D collision){
         if (collision.gameObject.CompareTag("Floor")){
             _gravityScale = 3;
@@ -181,11 +191,11 @@ public class Player : MonoBehaviour{
             transform.rotation = spawnPoint.rotation;
             rb2d.velocity = Vector2.zero;
             rb2d.angularVelocity = 0f;
+            _lives--;
         }
     }
     private void OnCollisionExit2D(Collision2D collision){
         if(collision.gameObject.CompareTag("Wall")){
-            
             canWallJump = false;
         }
     }
