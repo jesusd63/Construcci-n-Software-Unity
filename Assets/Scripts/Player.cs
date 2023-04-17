@@ -113,7 +113,7 @@ public class Player : MonoBehaviour{
         }
         if(_falling){
             if(_gravityScale < _maxgravityScale){
-                _gravityScale += 0.5f;
+                _gravityScale += 0.9f;
             }
         }
         if(!_falling){
@@ -196,8 +196,8 @@ public class Player : MonoBehaviour{
             _lives--;
         }
         if(collision.gameObject.CompareTag("exit")){
-            // SceneManager.LoadScene();
-            Debug.Log("GONE");
+            
+            SceneManager.LoadScene(collision.gameObject.GetComponent<Exit>()._new_scene);
         }
     }
     private void OnCollisionExit2D(Collision2D collision){
