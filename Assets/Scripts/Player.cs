@@ -123,7 +123,7 @@ public class Player : MonoBehaviour{
 
     void WallJump(){
         if(Input.GetButtonDown("Jump") && canWallJump){
-            Debug.Log("Wall Jumping");
+            // Debug.Log("Wall Jumping");
             isGrounded = false;
             _wallJumping = true;
             _falling = false;
@@ -195,8 +195,9 @@ public class Player : MonoBehaviour{
             rb2d.angularVelocity = 0f;
             _lives--;
         }
-        if(collision.gameObject.CompareTag("Spikes")){
-            SceneManager.LoadScene();
+        if(collision.gameObject.CompareTag("exit")){
+            // SceneManager.LoadScene();
+            Debug.Log("GONE");
         }
     }
     private void OnCollisionExit2D(Collision2D collision){
