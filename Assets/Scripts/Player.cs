@@ -35,6 +35,7 @@ public class Player : MonoBehaviour{
     private bool _wallJumping;
     private float _wallJumpTime;
     private bool horizontalInputBool = true;
+    private string _scene;
 
     private bool _dashing;
     private float _dashCooldown=0;
@@ -195,14 +196,16 @@ public class Player : MonoBehaviour{
             rb2d.angularVelocity = 0f;
             _lives--;
         }
-        if(collision.gameObject.CompareTag("exit")){
-            
-            SceneManager.LoadScene(collision.gameObject.GetComponent<Exit>()._new_scene);
-        }
     }
     private void OnCollisionExit2D(Collision2D collision){
         if(collision.gameObject.CompareTag("Wall")){
             canWallJump = false;
+        }
+    }
+    private void OnTriggerEnter2D(Collider2D collision){
+        if(collision.gameObject.CompareTag("exit")){
+            _scene = collision.gameObject.GetComponent<Exit>()._new_scene; 
+            SceneManager.LoadScene(_scene);
         }
     }
 }
