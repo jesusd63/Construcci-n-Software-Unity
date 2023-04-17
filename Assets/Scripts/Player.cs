@@ -201,6 +201,10 @@ public class Player : MonoBehaviour{
         if(collision.gameObject.CompareTag("Wall")){
             canWallJump = false;
         }
+        if(collision.gameObject.CompareTag("Floor")){
+            isGrounded = false;
+            
+        }
     }
     private void OnTriggerEnter2D(Collider2D collision){
         if(collision.gameObject.CompareTag("exit")){
