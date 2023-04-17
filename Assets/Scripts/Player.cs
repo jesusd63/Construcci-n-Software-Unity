@@ -37,17 +37,15 @@ public class Player : MonoBehaviour{
     private bool horizontalInputBool = true;
 
     private bool _dashing;
-    private float _dashCooldown;
-    private bool canDash;
+    private float _dashCooldown=0;
+    private bool canDash=true;
     private float _dashingTime;
     [SerializeField]
     private float _dashForce = 3.5f;
     
-    [SerializeField]
-    private float _maxgravityScale = 8;
+    private float _maxgravityScale = 15;
 
     private int _lives = 3;
-    
     
     void Start(){
         rb2d = GetComponent<Rigidbody2D>();
@@ -83,12 +81,10 @@ public class Player : MonoBehaviour{
         //rb2d.AddForce(movement);
         rb2d.velocity = movement*_speed;
     }
-
     void CheckGrounded(){
         if(isGrounded){
             _gravityScale = 3;
             _falling = false;
-            canDash = true;
         }
         else{
             if(!jumping && !_wallJumping && !_dashing){
@@ -151,7 +147,7 @@ public class Player : MonoBehaviour{
         if(Input.GetKeyDown(KeyCode.X) && canDash){
             _dashing = true;
             canDash=false;
-            //If velocity is jump
+            _dashCooldown = 1.25f;
             if(rb2d.velocity.y > 0){
                 rb2d.velocity = new Vector2(0, rb2d.velocity.y);
             }else{
@@ -166,6 +162,12 @@ public class Player : MonoBehaviour{
         if(_dashingTime > .25){
             _dashing = false;
             _dashingTime = 0;
+        }
+        if(_dashCooldown > 0){
+            _dashCooldown -= Time.deltaTime;
+        }
+        if(_dashCooldown < 0){
+            canDash = true;
         }
     }
     void Lives(){
@@ -192,6 +194,9 @@ public class Player : MonoBehaviour{
             rb2d.velocity = Vector2.zero;
             rb2d.angularVelocity = 0f;
             _lives--;
+        }
+        if(collision.gameObject.CompareTag("Spikes")){
+            SceneManager.LoadScene();
         }
     }
     private void OnCollisionExit2D(Collision2D collision){

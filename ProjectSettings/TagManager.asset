@@ -7,6 +7,7 @@ TagManager:
   - Floor
   - Wall
   - Spikes
+  - exit
   layers:
   - Default
   - TransparentFX
