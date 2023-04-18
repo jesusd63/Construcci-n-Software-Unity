@@ -19,7 +19,7 @@ public class Player : MonoBehaviour{
     private float _gravityScale=3;
 
     [SerializeField]
-    private int _wallJumpForce = 30;
+    private int _wallJumpForce = 36;
 
     // private bool isGrounded=false;
     private bool jumped=false;
@@ -28,7 +28,7 @@ public class Player : MonoBehaviour{
     private bool jumping = false;
     private bool _falling = true;
     float _jumpTime;
-    private float _buttonTime = .31f;
+    private float _buttonTime = .25f;
     private float _jumpButtonTime = .25f;
     public ContactPoint2D _wallpoint; 
     private float horizontalInput;
@@ -45,10 +45,10 @@ public class Player : MonoBehaviour{
     [SerializeField]
     private float _dashForce = 3.5f;
     
-    private float _maxgravityScale = 15;
+    private float _maxgravityScale = 40f;
     public LayerMask layerMask;
     private Vector3 boxSize= new Vector3(1,0.1f,0);
-    private float maxDistance=0.6f;
+    private float maxDistance=0.8f;
         
     void Start(){
         rb2d = GetComponent<Rigidbody2D>();
@@ -109,29 +109,6 @@ public class Player : MonoBehaviour{
             return false;
         }
     }
-    // void CheckGrounded(){
-    //     if(hit.collider != null){
-    //         if(hit.collider.CompareTag("Floor") || hit.collider.CompareTag("Plataforma")){
-    //             isGrounded = true;
-    //             jumped = false;
-    //             _gravityScale = 3;
-    //             _falling = false;
-    //         }
-    //     }
-    //     else{
-    //         isGrounded = false;
-    //     }
-    //     // if(isGrounded){
-    //     //     _gravityScale = 3;
-    //     //     _falling = false;
-    //     // }
-    //     // else{
-    //     //     if(!jumping && !_wallJumping && !_dashing){
-    //     //         _falling = true;
-    //     //     }
-    //     // }
-    // }
-
 
     void Jump(){
         if (Input.GetButtonDown("Jump") && CheckGrounded()){ //&& !jumped){
@@ -152,7 +129,7 @@ public class Player : MonoBehaviour{
         }
         if(_falling){
             if(_gravityScale < _maxgravityScale){
-                _gravityScale += 0.3f;
+                _gravityScale = _gravityScale*1.05f;
             }
         }
         if(!_falling){
