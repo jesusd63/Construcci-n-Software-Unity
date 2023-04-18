@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 public class Player : MonoBehaviour{
     private Rigidbody2D rb2d;
     public Transform spawnPoint;
+    private Animator _animator;
 
     [SerializeField]
     private int _speed=3;
@@ -52,6 +53,7 @@ public class Player : MonoBehaviour{
     void Start(){
         rb2d = GetComponent<Rigidbody2D>();
         Assert.IsNotNull(rb2d);
+        _animator = GetComponent<Animator>();
     }
 
     void Update(){
@@ -83,9 +85,17 @@ public class Player : MonoBehaviour{
     }
 
     void Move(){
-        Vector2 movement = new Vector2(_speed*horizontalInput, 0);
+        float final = _speed*horizontalInput;
+        Vector2 movement = new Vector2(final, 0);
         //rb2d.AddForce(movement);
         rb2d.velocity = movement*_speed;
+        _animator.SetFloat("speed", final);
+        if(final < 0){
+            _animator.SetBool("left", true);
+        }
+        else{
+            _animator.SetBool("left", false);
+        }
     }
     void OnDrawGizmos() {
         Gizmos.color = Color.red;
@@ -125,6 +135,7 @@ public class Player : MonoBehaviour{
 
     void Jump(){
         if (Input.GetButtonDown("Jump") && CheckGrounded()){ //&& !jumped){
+            _animator.SetTrigger("Jump");
             rb2d.AddForce(new Vector2(0, 5), ForceMode2D.Impulse);
             jumping = true;
             _jumpTime = 0;
@@ -135,7 +146,7 @@ public class Player : MonoBehaviour{
             _jumpTime += Time.deltaTime;
         }
 
-        if( _jumpTime > _buttonTime){
+        if( _jumpTime > _buttonTime || Input.GetButtonUp("Jump")){
             jumping = false;
             _falling = true;
         }
