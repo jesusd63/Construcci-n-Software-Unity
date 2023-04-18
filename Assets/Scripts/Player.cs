@@ -22,7 +22,7 @@ public class Player : MonoBehaviour{
     private int _wallJumpForce = 36;
 
     // private bool isGrounded=false;
-    private bool jumped=false;
+    // private bool jumped=false;
     private bool canWallJump;
 
     private bool jumping = false;
@@ -117,7 +117,7 @@ public class Player : MonoBehaviour{
             rb2d.AddForce(new Vector2(0, 5), ForceMode2D.Impulse);
             jumping = true;
             _jumpTime = 0;
-            jumped = true;
+            // jumped = true;
         }
         if(jumping){
             rb2d.velocity = new Vector2(rb2d.velocity.x, _jumpAmount + 1);
