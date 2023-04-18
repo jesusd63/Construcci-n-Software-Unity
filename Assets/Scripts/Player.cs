@@ -48,7 +48,7 @@ public class Player : MonoBehaviour{
     private float _maxgravityScale = 15;
     public LayerMask layerMask;
     private Vector3 boxSize= new Vector3(1,0.1f,0);
-    private float maxDistance=1.2f;
+    private float maxDistance=0.8f;
         
     void Start(){
         rb2d = GetComponent<Rigidbody2D>();
@@ -170,7 +170,7 @@ public class Player : MonoBehaviour{
             _jumpTime = 0;
         }
         if(_wallJumping){
-            rb2d.velocity = new Vector2(_wallpoint.normal.x * _speed * _wallJumpForce, _jumpAmount + 1.5f);
+            rb2d.velocity = new Vector2(_wallpoint.normal.x * _speed * _wallJumpForce, _jumpAmount + 1.3f);
             _wallJumpTime += Time.deltaTime;
             horizontalInputBool = false;
         }
