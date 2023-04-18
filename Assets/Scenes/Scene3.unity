@@ -394,7 +394,7 @@ GameObject:
   - component: {fileID: 147374172}
   m_Layer: 6
   m_Name: Floor (2)
-  m_TagString: Floor
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -643,7 +643,7 @@ GameObject:
   - component: {fileID: 427567343}
   m_Layer: 6
   m_Name: Floor (1)
-  m_TagString: Floor
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1234,6 +1234,10 @@ PrefabInstance:
       propertyPath: _maxgravityScale
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: 7437180986479773845, guid: 4b4f6695048281e4da47d055b8ce1dd9, type: 3}
+      propertyPath: layerMask.m_Bits
+      value: 64
+      objectReference: {fileID: 0}
     - target: {fileID: 7437180986479773851, guid: 4b4f6695048281e4da47d055b8ce1dd9, type: 3}
       propertyPath: m_RootOrder
       value: 2
@@ -1514,7 +1518,7 @@ GameObject:
   - component: {fileID: 791087240}
   m_Layer: 6
   m_Name: Floor (3)
-  m_TagString: Floor
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1603,8 +1607,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 791087239}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 6.73, y: -0.9, z: 0.07479763}
-  m_LocalScale: {x: 2.575779, y: 0.80437493, z: 1}
+  m_LocalPosition: {x: 7.14, y: -0.83, z: 0.07479763}
+  m_LocalScale: {x: 3.2197237, y: 0.80437493, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1713,8 +1717,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 815428114}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 6.74, y: -3.22, z: 0.07097953}
-  m_LocalScale: {x: 0.9617844, y: 3.7567897, z: 1}
+  m_LocalPosition: {x: 7.1499996, y: -3.15, z: 0.07097953}
+  m_LocalScale: {x: 2.3804164, y: 3.944629, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}

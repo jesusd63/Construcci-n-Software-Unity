@@ -11,7 +11,7 @@ public class Player : MonoBehaviour{
     [SerializeField]
     private int _speed=3;
 
-    [SerializeField]
+    
     private int _jumpAmount=9;
 
     [SerializeField]
@@ -20,14 +20,14 @@ public class Player : MonoBehaviour{
     [SerializeField]
     private int _wallJumpForce = 30;
 
-    private bool isGrounded=false;
+    // private bool isGrounded=false;
     private bool jumped=false;
     private bool canWallJump;
 
     private bool jumping = false;
-    private bool _falling = false;
+    private bool _falling = true;
     float _jumpTime;
-    private float _buttonTime = .25f;
+    private float _buttonTime = .31f;
     private float _jumpButtonTime = .25f;
     public ContactPoint2D _wallpoint; 
     private float horizontalInput;
@@ -45,15 +45,24 @@ public class Player : MonoBehaviour{
     private float _dashForce = 3.5f;
     
     private float _maxgravityScale = 15;
-
-    private int _lives = 3;
-    
+    public LayerMask layerMask;
+    private Vector3 boxSize= new Vector3(1,0.1f,0);
+    private float maxDistance=0.6f;
+        
     void Start(){
         rb2d = GetComponent<Rigidbody2D>();
         Assert.IsNotNull(rb2d);
     }
 
     void Update(){
+        if (CheckGrounded()){
+            _gravityScale = 3;
+            _falling = false;
+        }else{
+            if(!jumping && !_wallJumping && !_dashing){
+                _falling = true;
+            }
+        }
         if(horizontalInputBool && !_dashing){
             horizontalInput = Input.GetAxis("Horizontal");
             verticalInput = Input.GetAxis("Vertical");
@@ -63,9 +72,6 @@ public class Player : MonoBehaviour{
         }
         Move();
 
-        CheckGrounded();
-
-        //Gravity
         rb2d.AddForce(Physics.gravity * (_gravityScale) * rb2d.mass);
 
         Jump();
@@ -74,7 +80,6 @@ public class Player : MonoBehaviour{
 
         Dash();
 
-        Lives();
     }
 
     void Move(){
@@ -82,25 +87,47 @@ public class Player : MonoBehaviour{
         //rb2d.AddForce(movement);
         rb2d.velocity = movement*_speed;
     }
-    void CheckGrounded(){
-        if(isGrounded){
-            _gravityScale = 3;
-            _falling = false;
-        }
-        else{
-            if(!jumping && !_wallJumping && !_dashing){
-                _falling = true;
-            }
+    void OnDrawGizmos() {
+        Gizmos.color = Color.red;
+        Gizmos.DrawCube(transform.position-transform.up*maxDistance, boxSize);
+    }
+    bool CheckGrounded(){
+        if(Physics2D.BoxCast(transform.position,boxSize,0,-transform.up,maxDistance,layerMask)){
+            return true;
+        }else{
+            
+            return false;
         }
     }
+    // void CheckGrounded(){
+    //     if(hit.collider != null){
+    //         if(hit.collider.CompareTag("Floor") || hit.collider.CompareTag("Plataforma")){
+    //             isGrounded = true;
+    //             jumped = false;
+    //             _gravityScale = 3;
+    //             _falling = false;
+    //         }
+    //     }
+    //     else{
+    //         isGrounded = false;
+    //     }
+    //     // if(isGrounded){
+    //     //     _gravityScale = 3;
+    //     //     _falling = false;
+    //     // }
+    //     // else{
+    //     //     if(!jumping && !_wallJumping && !_dashing){
+    //     //         _falling = true;
+    //     //     }
+    //     // }
+    // }
 
 
     void Jump(){
-        if (Input.GetButtonDown("Jump") && isGrounded && !jumped && !_dashing){
+        if (Input.GetButtonDown("Jump") && CheckGrounded()){ //&& !jumped){
             rb2d.AddForce(new Vector2(0, 5), ForceMode2D.Impulse);
             jumping = true;
             _jumpTime = 0;
-            isGrounded = false;
             jumped = true;
         }
         if(jumping){
@@ -114,7 +141,7 @@ public class Player : MonoBehaviour{
         }
         if(_falling){
             if(_gravityScale < _maxgravityScale){
-                _gravityScale += 0.9f;
+                _gravityScale += 0.3f;
             }
         }
         if(!_falling){
@@ -125,7 +152,6 @@ public class Player : MonoBehaviour{
     void WallJump(){
         if(Input.GetButtonDown("Jump") && canWallJump){
             // Debug.Log("Wall Jumping");
-            isGrounded = false;
             _wallJumping = true;
             _falling = false;
             _gravityScale = 3;
@@ -171,40 +197,43 @@ public class Player : MonoBehaviour{
             canDash = true;
         }
     }
-    void Lives(){
-        if(_lives <= 0){
-            SceneManager.LoadScene("Inicio");
-        }
-    }
      private void OnCollisionEnter2D(Collision2D collision){
-        if (collision.gameObject.CompareTag("Floor")){
-            _gravityScale = 3;
-            jumping = false;
-            _falling = false;
-            isGrounded = true;
-            jumped = false;
-        }
+        // if (collision.gameObject.CompareTag("Floor")){
+        //     _gravityScale = 3;
+        //     jumping = false;
+        //     _falling = false;
+        //     isGrounded = true;
+        //     jumped = false;
+        // }
         if(collision.gameObject.CompareTag("Wall")){
             canWallJump = true;
             _wallpoint = collision.GetContact(0);
             // Debug.DrawRay(_wallpoint.point, _wallpoint.normal, Color.green, 20, false);
         }
+        // if(collision.gameObject.CompareTag("Plataforma")){
+        //     _gravityScale = 3;
+        //     jumping = false;
+        //     _falling = false;
+        //     isGrounded = true;
+        //     jumped = false;
+        // }
         if(collision.gameObject.CompareTag("Spikes")){
             transform.position = spawnPoint.position;
             transform.rotation = spawnPoint.rotation;
             rb2d.velocity = Vector2.zero;
             rb2d.angularVelocity = 0f;
-            _lives--;
         }
     }
     private void OnCollisionExit2D(Collision2D collision){
         if(collision.gameObject.CompareTag("Wall")){
             canWallJump = false;
         }
-        if(collision.gameObject.CompareTag("Floor")){
-            isGrounded = false;
-            
-        }
+        // if(collision.gameObject.CompareTag("Floor")){
+        //     isGrounded = false;
+        // }
+        // if(collision.gameObject.CompareTag("Plataforma")){
+        //     isGrounded = false;
+        // }
     }
     private void OnTriggerEnter2D(Collider2D collision){
         if(collision.gameObject.CompareTag("exit")){

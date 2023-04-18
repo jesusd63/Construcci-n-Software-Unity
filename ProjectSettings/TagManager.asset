@@ -8,6 +8,7 @@ TagManager:
   - Wall
   - Spikes
   - exit
+  - Plataforma
   layers:
   - Default
   - TransparentFX

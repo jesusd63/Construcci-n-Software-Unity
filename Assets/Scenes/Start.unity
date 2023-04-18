@@ -662,6 +662,10 @@ PrefabInstance:
       propertyPath: _maxgravityScale
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: 7437180986479773845, guid: 4b4f6695048281e4da47d055b8ce1dd9, type: 3}
+      propertyPath: layerMask.m_Bits
+      value: 64
+      objectReference: {fileID: 0}
     - target: {fileID: 7437180986479773851, guid: 4b4f6695048281e4da47d055b8ce1dd9, type: 3}
       propertyPath: m_RootOrder
       value: 2
