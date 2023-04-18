@@ -49,6 +49,14 @@ public class Player : MonoBehaviour{
     public LayerMask layerMask;
     private Vector3 boxSize= new Vector3(.6f,0.1f,0);
     private float maxDistance=0.8f;
+
+
+
+    public DashState dashState;
+    private float dashForce = 2;
+    private float dashTimer;
+    private float maxDash = .35f;
+    public Vector2 savedVelocity;
         
     void Start(){
         rb2d = GetComponent<Rigidbody2D>();
@@ -79,10 +87,65 @@ public class Player : MonoBehaviour{
         Jump();
 
         WallJump();
+        //Dash();
 
-        Dash();
+        switch (dashState)
+         {
+             case DashState.Ready:
+                 var isDashKeyDown = Input.GetKeyDown(KeyCode.X);
+                 if (isDashKeyDown){
+                     savedVelocity = rb2d.velocity;
+                    //  rb2d.AddForce(new Vector2(rb2d.velocity.x * dashForce, rb2d.velocity.y));
+                     dashState = DashState.Dashing;
+                 }
+                 break;
+             case DashState.Dashing:
+                 dashTimer += Time.deltaTime * 3;
+                 _falling = false;
+                 if(horizontalInput == 0 && verticalInput == 0){
+                    rb2d.velocity = new Vector2(1 * _speed *dashForce * 5, 0); 
+                 }
+                 else{
+                    rb2d.velocity = new Vector2(horizontalInput * _speed *dashForce * 4, verticalInput * _speed * 5);
+                 }
+                //  if(horizontalInput == 0){
+                //     if(horizontalInput == 0){
+                //         rb2d.velocity = new Vector2(1 * _speed *dashForce * 5, 0); 
+                //     }
+                //     else{
+                //         rb2d.velocity = new Vector2(0, rb2d.velocity.y * _speed);
+                //     }
+                //  }
+                //  else{
+                //     rb2d.velocity = new Vector2(rb2d.velocity.x * _speed *dashForce, rb2d.velocity.y * _speed);
+                //  }
+                 if (dashTimer >= maxDash)
+                 {
+                     dashTimer = maxDash;
+                     rb2d.velocity = savedVelocity;
+                     if(!CheckGrounded()){
+                        _falling = true;
+                     }
+                     dashState = DashState.Cooldown;
+                 }
+                 break;
+             case DashState.Cooldown:
+                 dashTimer -= Time.deltaTime;
+                 if (dashTimer <= 0)
+                 {
+                     dashTimer = 0;
+                     dashState = DashState.Ready;
+                 }
+                 break;
+         }
 
     }
+
+     public enum DashState{
+     Ready,
+     Dashing,
+     Cooldown
+     }
 
     void Move(){
         float final = _speed*horizontalInput;
@@ -130,7 +193,7 @@ public class Player : MonoBehaviour{
         }
         if(_falling){
             if(_gravityScale < _maxgravityScale){
-                _gravityScale = _gravityScale*1.05f;
+                _gravityScale = _gravityScale*1.06f;
             }
         }
         if(!_falling){
@@ -164,20 +227,33 @@ public class Player : MonoBehaviour{
             _dashing = true;
             canDash=false;
             _dashCooldown = 1.25f;
-            if(rb2d.velocity.y > 0){
-                rb2d.velocity = new Vector2(0, rb2d.velocity.y);
-            }else{
-                rb2d.velocity = Vector2.zero;
-            }
+            // if(rb2d.velocity.y > 0){
+            //     rb2d.velocity = new Vector2(0, rb2d.velocity.y);
+            // }else{
+            //     rb2d.velocity = Vector2.zero;
+            // }
         }
         if(_dashing){
             rb2d.velocity = Vector2.zero;
-            rb2d.velocity = new Vector2(rb2d.velocity.x + _dashForce*_speed , rb2d.velocity.y);
+            if(horizontalInput == 0 && verticalInput == 0){
+                rb2d.velocity = new Vector2(transform.forward.x, 0) * _dashForce *_speed;    
+            }
+            _falling = false;
+            rb2d.AddForce(new Vector2(horizontalInput * _dashForce *_speed, verticalInput * _dashForce *_speed));
+            // if(verticalInput == 0){
+            //     rb2d.velocity = new Vector2(rb2d.velocity.x + _dashForce*_speed , rb2d.velocity.y);
+            // }
+            // else{
+            //     rb2d.velocity = new Vector2(rb2d.velocity.x + _dashForce*_speed , verticalInput*_dashForce*_speed);
+            // }
             _dashingTime += Time.deltaTime;
         }
         if(_dashingTime > .25){
             _dashing = false;
             _dashingTime = 0;
+            if(!CheckGrounded()){
+                _falling = true;
+            }
         }
         if(_dashCooldown > 0){
             _dashCooldown -= Time.deltaTime;
