@@ -57,11 +57,13 @@ public class Player : MonoBehaviour{
     private float dashTimer;
     private float maxDash = .35f;
     public Vector2 savedVelocity;
-        
+    private int targetFrameRate = 142;
     void Start(){
         rb2d = GetComponent<Rigidbody2D>();
         Assert.IsNotNull(rb2d);
         _animator = GetComponent<Animator>();
+        Application.targetFrameRate = targetFrameRate;
+         
     }
 
     void Update(){
