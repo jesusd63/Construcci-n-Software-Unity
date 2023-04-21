@@ -12,7 +12,6 @@ public class Player : MonoBehaviour{
     [SerializeField]
     private int _speed=3;
 
-    
     private int _jumpAmount=9;
 
     [SerializeField]
@@ -68,6 +67,29 @@ public class Player : MonoBehaviour{
     }
 
     void Update(){
+
+        if(horizontalInputBool && !_dashing){
+            horizontalInput = Input.GetAxis("Horizontal");
+            verticalInput = Input.GetAxis("Vertical");
+        }
+        else{
+            horizontalInput = 0;
+        }
+
+        float final = _speed*horizontalInput;
+        Vector2 movement = new Vector2(horizontalInput, 0) * Time.deltaTime * _speed;
+        //rb2d.velocity = movement;
+        rb2d.AddForce(movement, ForceMode2D.Impulse);
+
+
+        _animator.SetFloat("speed", final);
+        if(final < 0){
+            _animator.SetBool("left", true);
+        }
+        else{
+            _animator.SetBool("left", false);
+        }
+
         if (CheckGrounded()){
             _gravityScale = 3;
             _falling = false;
@@ -76,14 +98,6 @@ public class Player : MonoBehaviour{
                 _falling = true;
             }
         }
-        if(horizontalInputBool && !_dashing){
-            horizontalInput = Input.GetAxis("Horizontal");
-            verticalInput = Input.GetAxis("Vertical");
-        }
-        else{
-            horizontalInput = 0;
-        }
-        Move();
 
         rb2d.AddForce(Physics.gravity * (_gravityScale) * rb2d.mass);
 
@@ -150,19 +164,6 @@ public class Player : MonoBehaviour{
      Cooldown
      }
 
-    void Move(){
-        float final = _speed*horizontalInput;
-        Vector2 movement = new Vector2(final, 0);
-        //rb2d.AddForce(movement);
-        rb2d.velocity = movement*_speed;
-        _animator.SetFloat("speed", final);
-        if(final < 0){
-            _animator.SetBool("left", true);
-        }
-        else{
-            _animator.SetBool("left", false);
-        }
-    }
     void OnDrawGizmos() {
         Gizmos.color = Color.red;
         Gizmos.DrawCube(transform.position-transform.up*maxDistance, boxSize);
