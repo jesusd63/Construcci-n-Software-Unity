@@ -649,6 +649,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 605ade076d9af11488c32f6059e3bea2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneName: Start
   myButton: {fileID: 560621916}
 --- !u!114 &560621916
 MonoBehaviour:
@@ -785,6 +786,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 605ade076d9af11488c32f6059e3bea2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneName: Start
   myButton: {fileID: 927264693}
 --- !u!114 &927264693
 MonoBehaviour:
@@ -1425,4 +1427,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 605ade076d9af11488c32f6059e3bea2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneName: Start
   myButton: {fileID: 2128851131}
