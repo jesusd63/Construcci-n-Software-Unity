@@ -12,7 +12,6 @@ public class Player : MonoBehaviour{
     [SerializeField]
     private int _speed=3;
 
-    
     private int _jumpAmount=9;
 
     [SerializeField]
@@ -62,9 +61,7 @@ public class Player : MonoBehaviour{
         rb2d = GetComponent<Rigidbody2D>();
         Assert.IsNotNull(rb2d);
         _animator = GetComponent<Animator>();
-        Application.targetFrameRate = targetFrameRate;
-        Screen.SetResolution(770, 386, true);
-         
+        Application.targetFrameRate = targetFrameRate;   
     }
 
     void Update(){
