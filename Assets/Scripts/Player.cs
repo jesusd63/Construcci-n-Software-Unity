@@ -63,7 +63,9 @@ public class Player : MonoBehaviour{
         rb2d = GetComponent<Rigidbody2D>();
         Assert.IsNotNull(rb2d);
         _animator = GetComponent<Animator>();
-        Application.targetFrameRate = targetFrameRate;   
+        Application.targetFrameRate = targetFrameRate;
+        Screen.SetResolution(1920, 1080, true);
+
     }
 
     void Update(){
