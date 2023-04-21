@@ -12,13 +12,15 @@ public class Player : MonoBehaviour{
     [SerializeField]
     private int _speed=3;
 
-    private int _jumpAmount=9;
+    private int _jumpAmount=8;
 
     [SerializeField]
     private float _gravityScale=3;
 
     [SerializeField]
-    private int _wallJumpForce = 36;
+    private int _wallJumpForce = 2;
+    [SerializeField]
+    private int _wallJumpForceUp = 2;
 
     // private bool isGrounded=false;
     // private bool jumped=false;
@@ -44,7 +46,7 @@ public class Player : MonoBehaviour{
     [SerializeField]
     private float _dashForce = 3.5f;
     
-    private float _maxgravityScale = 40f;
+    private float _maxgravityScale = 50f;
     public LayerMask layerMask;
     private Vector3 boxSize= new Vector3(.6f,0.1f,0);
     private float maxDistance=0.8f;
@@ -89,7 +91,7 @@ public class Player : MonoBehaviour{
         }
 
         if (CheckGrounded()){
-            _gravityScale = 3;
+            _gravityScale = 10;
             _falling = false;
         }else{
             if(!jumping && !_wallJumping && !_dashing){
@@ -97,7 +99,7 @@ public class Player : MonoBehaviour{
             }
         }
 
-        rb2d.AddForce(Physics.gravity * (_gravityScale) * rb2d.mass);
+        rb2d.AddForce(Physics.gravity * (_gravityScale) * rb2d.mass * Time.deltaTime);
 
         Jump();
 
@@ -111,17 +113,20 @@ public class Player : MonoBehaviour{
                  if (isDashKeyDown){
                      savedVelocity = rb2d.velocity;
                     //  rb2d.AddForce(new Vector2(rb2d.velocity.x * dashForce, rb2d.velocity.y));
-                     dashState = DashState.Dashing;
+                     rb2d.velocity = new Vector2(0,0);
+                     dashState = DashState.Dashing; 
                  }
                  break;
              case DashState.Dashing:
                  dashTimer += Time.deltaTime * 3;
                  _falling = false;
                  if(horizontalInput == 0 && verticalInput == 0){
-                    rb2d.velocity = new Vector2(1 * _speed *dashForce * 5, 0); 
+                    rb2d.AddForce(new Vector2(_speed *dashForce * 5 * Time.deltaTime, 0), ForceMode2D.Impulse);
+                    // rb2d.velocity = new Vector2(_speed *dashForce * 5 * Time.deltaTime, 0); 
                  }
                  else{
-                    rb2d.velocity = new Vector2(horizontalInput * _speed *dashForce * 4, verticalInput * _speed * 5);
+                    rb2d.AddForce(new Vector2(horizontalInput * _speed *dashForce * 4 * Time.deltaTime, verticalInput * _speed * Time.deltaTime * 5), ForceMode2D.Impulse);
+                    // rb2d.velocity = new Vector2(horizontalInput * _speed *dashForce * 4 * Time.deltaTime, verticalInput * _speed * 5 * Time.deltaTime);
                  }
                 //  if(horizontalInput == 0){
                 //     if(horizontalInput == 0){
@@ -195,11 +200,11 @@ public class Player : MonoBehaviour{
         }
         if(_falling){
             if(_gravityScale < _maxgravityScale){
-                _gravityScale = _gravityScale*1.06f;
+                _gravityScale = _gravityScale*1.1f;
             }
         }
         if(!_falling){
-            _gravityScale = 3;
+            _gravityScale = 10;
         }
     }
 
@@ -208,11 +213,11 @@ public class Player : MonoBehaviour{
             // Debug.Log("Wall Jumping");
             _wallJumping = true;
             _falling = false;
-            _gravityScale = 3;
+            _gravityScale = 10;
             _jumpTime = 0;
         }
         if(_wallJumping){
-            rb2d.velocity = new Vector2(_wallpoint.normal.x * _speed * _wallJumpForce, _jumpAmount + 1.3f);
+            rb2d.velocity = new Vector2(_wallpoint.normal.x * _speed * _wallJumpForce * Time.deltaTime, (_jumpAmount * _wallJumpForceUp) * Time.deltaTime);
             _wallJumpTime += Time.deltaTime;
             horizontalInputBool = false;
         }
