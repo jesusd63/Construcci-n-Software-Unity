@@ -78,7 +78,6 @@ public class Player : MonoBehaviour{
 
         float final = _speed*horizontalInput;
         Vector2 movement = new Vector2(horizontalInput, 0) * Time.deltaTime * _speed;
-        //rb2d.velocity = movement;
         rb2d.AddForce(movement, ForceMode2D.Impulse);
 
 
@@ -155,7 +154,6 @@ public class Player : MonoBehaviour{
                  }
                  break;
          }
-
     }
 
      public enum DashState{
@@ -163,7 +161,6 @@ public class Player : MonoBehaviour{
      Dashing,
      Cooldown
      }
-
     void OnDrawGizmos() {
         Gizmos.color = Color.red;
         Gizmos.DrawCube(transform.position-transform.up*maxDistance, boxSize);
