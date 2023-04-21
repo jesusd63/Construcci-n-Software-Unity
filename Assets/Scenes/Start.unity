@@ -212,12 +212,24 @@ PrefabInstance:
     m_TransformParent: {fileID: 1019756183}
     m_Modifications:
     - target: {fileID: 6589913851356457891, guid: 393baf3352a2dd04c917bd09d5f4deed, type: 3}
+      propertyPath: _speed
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 6589913851356457891, guid: 393baf3352a2dd04c917bd09d5f4deed, type: 3}
       propertyPath: spawnPoint
       value: 
       objectReference: {fileID: 1179331196}
     - target: {fileID: 6589913851356457891, guid: 393baf3352a2dd04c917bd09d5f4deed, type: 3}
       propertyPath: maxDistance
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6589913851356457892, guid: 393baf3352a2dd04c917bd09d5f4deed, type: 3}
+      propertyPath: m_LinearDrag
+      value: 2.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6589913851356457892, guid: 393baf3352a2dd04c917bd09d5f4deed, type: 3}
+      propertyPath: m_AngularDrag
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 6589913851356457894, guid: 393baf3352a2dd04c917bd09d5f4deed, type: 3}
       propertyPath: m_RootOrder
