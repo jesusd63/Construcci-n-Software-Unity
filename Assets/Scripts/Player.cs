@@ -49,7 +49,8 @@ public class Player : MonoBehaviour{
     private float _maxgravityScale = 50f;
     public LayerMask layerMask;
     private Vector3 boxSize= new Vector3(.6f,0.1f,0);
-    private float maxDistance=0.8f;
+
+    private float maxDistance=1f;
 
 
 
