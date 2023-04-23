@@ -52,8 +52,6 @@ public class Player : MonoBehaviour{
 
     private float maxDistance=1f;
 
-
-
     public DashState dashState;
     private float dashForce = 2;
     private float dashTimer;
@@ -220,7 +218,8 @@ public class Player : MonoBehaviour{
             _jumpTime = 0;
         }
         if(_wallJumping){
-            rb2d.velocity = new Vector2(_wallpoint.normal.x * _speed * _wallJumpForce * Time.deltaTime, (_jumpAmount * _wallJumpForceUp) * Time.deltaTime);
+            rb2d.velocity = new Vector2(_wallpoint.normal.x * _speed * _wallJumpForce * Time.deltaTime,
+                                         (_jumpAmount * _wallJumpForceUp) * Time.deltaTime);
             _wallJumpTime += Time.deltaTime;
             horizontalInputBool = false;
         }
