@@ -17,10 +17,9 @@ public class Player : MonoBehaviour{
     [SerializeField]
     private float _gravityScale=3;
 
-    [SerializeField]
-    private int _wallJumpForce = 2;
-    [SerializeField]
-    private int _wallJumpForceUp = 2;
+    
+    private int _wallJumpForce = 11;
+    private int _wallJumpForceUp = 100;
 
     // private bool isGrounded=false;
     // private bool jumped=false;
@@ -214,7 +213,7 @@ public class Player : MonoBehaviour{
             // Debug.Log("Wall Jumping");
             _wallJumping = true;
             _falling = false;
-            _gravityScale = 10;
+            _gravityScale = 3;
             _jumpTime = 0;
         }
         if(_wallJumping){
