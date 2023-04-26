@@ -17,7 +17,6 @@ public class Player : MonoBehaviour{
     [SerializeField]
     private float _gravityScale=3;
 
-    
     private int _wallJumpForce = 11;
     private int _wallJumpForceUp = 100;
 
@@ -56,12 +55,12 @@ public class Player : MonoBehaviour{
     private float dashTimer;
     private float maxDash = .35f;
     public Vector2 savedVelocity;
-    private int targetFrameRate = 142;
+    // private int targetFrameRate = 142;
     void Start(){
         rb2d = GetComponent<Rigidbody2D>();
         Assert.IsNotNull(rb2d);
         _animator = GetComponent<Animator>();
-        Application.targetFrameRate = targetFrameRate;
+        // Application.targetFrameRate = targetFrameRate;
         Screen.SetResolution(1920, 1080, true);
 
     }
