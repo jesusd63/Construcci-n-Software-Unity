@@ -33,9 +33,8 @@ public class Player : MonoBehaviour{
     private float _wallJumpTime;
     //Wall check
     public LayerMask wallLayerMask;
-    private Vector3 boxSizeWall= new Vector3(0.1f,.6f,0);
-    [SerializeField]
-    private float maxDistanceWall=0.7f;
+    private Vector3 boxSizeWall= new Vector3(0.2f,1.4f,0);
+    private float maxDistanceWall=0.4f;
     private bool _canWallJump;
     private RaycastHit2D _wallpoint;
     //Scene
@@ -55,17 +54,23 @@ public class Player : MonoBehaviour{
     public LayerMask layerMask;
     private Vector3 boxSize= new Vector3(.6f,0.1f,0);
     private float maxDistance=0.7f;
+
+    //Sound
+    public AudioClip soundClip;
+    private AudioSource soundSource;
+
+
     void Start(){
         rb2d = GetComponent<Rigidbody2D>();
         Assert.IsNotNull(rb2d);
         _animator = GetComponent<Animator>();
+        soundSource = GetComponent<AudioSource>();
         // Application.targetFrameRate = targetFrameRate;
         Screen.SetResolution(1920, 1080, true);
 
     }
 
     void Update(){
-
         if(horizontalInputBool && !_dashing){
             horizontalInput = Input.GetAxis("Horizontal");
             verticalInput = Input.GetAxis("Vertical");
@@ -102,13 +107,14 @@ public class Player : MonoBehaviour{
         Jump();
 
         WallJump();
-        
-        switch (dashState)
-         {
+        switch (dashState){
              case DashState.Ready:
                  var isDashKeyDown = Input.GetKeyDown(KeyCode.X);
                  if (isDashKeyDown){
-                     savedVelocity = rb2d.velocity;
+                    soundSource.PlayOneShot(soundClip);
+                    _dashingTime = 0;
+                    dashState = DashState.Dashing;
+                    savedVelocity = rb2d.velocity;
                     //  rb2d.AddForce(new Vector2(rb2d.velocity.x * dashForce, rb2d.velocity.y));
                      rb2d.velocity = new Vector2(0,0);
                      dashState = DashState.Dashing; 
@@ -125,17 +131,7 @@ public class Player : MonoBehaviour{
                     rb2d.AddForce(new Vector2(horizontalInput * _speed *dashForce * 4 * Time.deltaTime, verticalInput * _speed * Time.deltaTime * 5), ForceMode2D.Impulse);
                     // rb2d.velocity = new Vector2(horizontalInput * _speed *dashForce * 4 * Time.deltaTime, verticalInput * _speed * 5 * Time.deltaTime);
                  }
-                //  if(horizontalInput == 0){
-                //     if(horizontalInput == 0){
-                //         rb2d.velocity = new Vector2(1 * _speed *dashForce * 5, 0); 
-                //     }
-                //     else{
-                //         rb2d.velocity = new Vector2(0, rb2d.velocity.y * _speed);
-                //     }
-                //  }
-                //  else{
-                //     rb2d.velocity = new Vector2(rb2d.velocity.x * _speed *dashForce, rb2d.velocity.y * _speed);
-                //  }
+                
                  if (dashTimer >= maxDash)
                  {
                      dashTimer = maxDash;
@@ -226,9 +222,7 @@ public class Player : MonoBehaviour{
             _gravityScale = 3;
             _jumpTime = 0;
         }
-
-        if (_wallJumping){
-            
+        if (_wallJumping){   
             rb2d.velocity = new Vector2(_wallpoint.normal.x * _speed * _wallJumpForce * Time.deltaTime,
                                         (_jumpAmount * _wallJumpForceUp) * Time.deltaTime);
             _wallJumpTime += Time.deltaTime;
@@ -245,14 +239,10 @@ public class Player : MonoBehaviour{
 
     void Dash(){
         if(Input.GetKeyDown(KeyCode.X) && canDash){
+            // Play DashSound.wav
             _dashing = true;
             canDash=false;
             _dashCooldown = 1.25f;
-            // if(rb2d.velocity.y > 0){
-            //     rb2d.velocity = new Vector2(0, rb2d.velocity.y);
-            // }else{
-            //     rb2d.velocity = Vector2.zero;
-            // }
         }
         if(_dashing){
             rb2d.velocity = Vector2.zero;
