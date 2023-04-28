@@ -217,7 +217,23 @@ PrefabInstance:
       objectReference: {fileID: 1179331196}
     - target: {fileID: 6589913851356457891, guid: 393baf3352a2dd04c917bd09d5f4deed, type: 3}
       propertyPath: maxDistance
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 6589913851356457891, guid: 393baf3352a2dd04c917bd09d5f4deed, type: 3}
+      propertyPath: _wallJumpForce
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 6589913851356457891, guid: 393baf3352a2dd04c917bd09d5f4deed, type: 3}
+      propertyPath: maxDistanceWall
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6589913851356457891, guid: 393baf3352a2dd04c917bd09d5f4deed, type: 3}
+      propertyPath: _wallJumpForceUp
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 6589913851356457891, guid: 393baf3352a2dd04c917bd09d5f4deed, type: 3}
+      propertyPath: wallLayerMask.m_Bits
+      value: 128
       objectReference: {fileID: 0}
     - target: {fileID: 6589913851356457894, guid: 393baf3352a2dd04c917bd09d5f4deed, type: 3}
       propertyPath: m_RootOrder

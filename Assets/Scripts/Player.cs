@@ -8,54 +8,53 @@ public class Player : MonoBehaviour{
     private Rigidbody2D rb2d;
     public Transform spawnPoint;
     private Animator _animator;
-
-    [SerializeField]
-    private int _speed=3;
-
+    //Movement
+    private int _speed=60;
+    private float horizontalInput;
+    private float verticalInput;
+    private bool horizontalInputBool = true;
+    //Jump
     private int _jumpAmount=8;
-
-    [SerializeField]
     private float _gravityScale=3;
-
-    private int _wallJumpForce = 11;
-    private int _wallJumpForceUp = 100;
-
-    // private bool isGrounded=false;
-    // private bool jumped=false;
+    private float _maxgravityScale = 50f;
+    //WallJump
     private bool canWallJump;
-
     private bool jumping = false;
     private bool _falling = true;
     float _jumpTime;
     private float _buttonTime = .25f;
     private float _jumpButtonTime = .25f;
-    public ContactPoint2D _wallpoint; 
-    private float horizontalInput;
-    private float verticalInput;
+    //WallJump
+    [SerializeField]
+    private int _wallJumpForce = 15;
+    [SerializeField]
+    private int _wallJumpForceUp = 100;
     private bool _wallJumping;
     private float _wallJumpTime;
-    private bool horizontalInputBool = true;
+    //Wall check
+    public LayerMask wallLayerMask;
+    private Vector3 boxSizeWall= new Vector3(0.1f,.6f,0);
+    [SerializeField]
+    private float maxDistanceWall=0.7f;
+    private bool _canWallJump;
+    private RaycastHit2D _wallpoint;
+    //Scene
     private string _scene;
-
+    //Dash
     private bool _dashing;
     private float _dashCooldown=0;
     private bool canDash=true;
     private float _dashingTime;
-    [SerializeField]
-    private float _dashForce = 3.5f;
-    
-    private float _maxgravityScale = 50f;
-    public LayerMask layerMask;
-    private Vector3 boxSize= new Vector3(.6f,0.1f,0);
-
-    private float maxDistance=1f;
-
+    private float _dashForce = 50;
     public DashState dashState;
     private float dashForce = 2;
     private float dashTimer;
     private float maxDash = .35f;
     public Vector2 savedVelocity;
-    // private int targetFrameRate = 142;
+    //Floor check
+    public LayerMask layerMask;
+    private Vector3 boxSize= new Vector3(.6f,0.1f,0);
+    private float maxDistance=0.7f;
     void Start(){
         rb2d = GetComponent<Rigidbody2D>();
         Assert.IsNotNull(rb2d);
@@ -90,7 +89,7 @@ public class Player : MonoBehaviour{
         }
 
         if (CheckGrounded()){
-            _gravityScale = 10;
+            _gravityScale = 3;
             _falling = false;
         }else{
             if(!jumping && !_wallJumping && !_dashing){
@@ -103,8 +102,7 @@ public class Player : MonoBehaviour{
         Jump();
 
         WallJump();
-        //Dash();
-
+        
         switch (dashState)
          {
              case DashState.Ready:
@@ -169,6 +167,10 @@ public class Player : MonoBehaviour{
     void OnDrawGizmos() {
         Gizmos.color = Color.red;
         Gizmos.DrawCube(transform.position-transform.up*maxDistance, boxSize);
+        Gizmos.color = Color.blue;
+        Gizmos.DrawCube(transform.position-transform.right*maxDistanceWall, boxSizeWall);
+        Gizmos.color = Color.green;
+        Gizmos.DrawCube(transform.position+transform.right*maxDistanceWall, boxSizeWall);
     }
     bool CheckGrounded(){
         // OnDrawGizmos();
@@ -203,25 +205,37 @@ public class Player : MonoBehaviour{
             }
         }
         if(!_falling){
-            _gravityScale = 10;
+            _gravityScale = 3;
         }
     }
 
     void WallJump(){
-        if(Input.GetButtonDown("Jump") && canWallJump){
-            // Debug.Log("Wall Jumping");
+        RaycastHit2D leftHit = Physics2D.BoxCast(transform.position, boxSize, 0, transform.right, maxDistanceWall, wallLayerMask);
+        RaycastHit2D rightHit = Physics2D.BoxCast(transform.position, boxSize, 0, -transform.right, maxDistanceWall, wallLayerMask);
+        if (leftHit || rightHit){
+            _wallpoint = leftHit  ? leftHit : rightHit;
+            _canWallJump = true;
+        } else {
+            _canWallJump = false;
+        }
+
+        if (Input.GetButtonDown("Jump") && _canWallJump){
+            // _animator.SetTrigger("Jump");
             _wallJumping = true;
             _falling = false;
             _gravityScale = 3;
             _jumpTime = 0;
         }
-        if(_wallJumping){
+
+        if (_wallJumping){
+            
             rb2d.velocity = new Vector2(_wallpoint.normal.x * _speed * _wallJumpForce * Time.deltaTime,
-                                         (_jumpAmount * _wallJumpForceUp) * Time.deltaTime);
+                                        (_jumpAmount * _wallJumpForceUp) * Time.deltaTime);
             _wallJumpTime += Time.deltaTime;
             horizontalInputBool = false;
         }
-        if(_wallJumpTime > _jumpButtonTime){
+
+        if (_wallJumpTime > _jumpButtonTime){
             _wallJumping = false;
             _falling = true;
             _wallJumpTime = 0;
@@ -277,11 +291,11 @@ public class Player : MonoBehaviour{
         //     isGrounded = true;
         //     jumped = false;
         // }
-        if(collision.gameObject.CompareTag("Wall")){
-            canWallJump = true;
-            _wallpoint = collision.GetContact(0);
-            // Debug.DrawRay(_wallpoint.point, _wallpoint.normal, Color.green, 20, false);
-        }
+        // if(collision.gameObject.CompareTag("Wall")){
+        //     canWallJump = true;
+        //     _wallpoint = collision.GetContact(0);
+        //     // Debug.DrawRay(_wallpoint.point, _wallpoint.normal, Color.green, 20, false);
+        // }
         // if(collision.gameObject.CompareTag("Plataforma")){
         //     _gravityScale = 3;
         //     jumping = false;
@@ -297,9 +311,9 @@ public class Player : MonoBehaviour{
         }
     }
     private void OnCollisionExit2D(Collision2D collision){
-        if(collision.gameObject.CompareTag("Wall")){
-            canWallJump = false;
-        }
+        // if(collision.gameObject.CompareTag("Wall")){
+        //     canWallJump = false;
+        // }
         // if(collision.gameObject.CompareTag("Floor")){
         //     isGrounded = false;
         // }
