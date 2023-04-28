@@ -18,16 +18,13 @@ public class Player : MonoBehaviour{
     private float _gravityScale=3;
     private float _maxgravityScale = 50f;
     //WallJump
-    private bool canWallJump;
+    private bool canWallJump=false;
     private bool jumping = false;
     private bool _falling = true;
     float _jumpTime;
     private float _buttonTime = .25f;
     private float _jumpButtonTime = .25f;
-    //WallJump
-    [SerializeField]
     private int _wallJumpForce = 15;
-    [SerializeField]
     private int _wallJumpForceUp = 100;
     private bool _wallJumping;
     private float _wallJumpTime;
@@ -54,7 +51,6 @@ public class Player : MonoBehaviour{
     public LayerMask layerMask;
     private Vector3 boxSize= new Vector3(.6f,0.1f,0);
     private float maxDistance=0.7f;
-
     //Sound
     public AudioClip soundClip;
     private AudioSource soundSource;
@@ -107,6 +103,7 @@ public class Player : MonoBehaviour{
         Jump();
 
         WallJump();
+
         switch (dashState){
              case DashState.Ready:
                  var isDashKeyDown = Input.GetKeyDown(KeyCode.X);
@@ -214,21 +211,19 @@ public class Player : MonoBehaviour{
         } else {
             _canWallJump = false;
         }
-
         if (Input.GetButtonDown("Jump") && _canWallJump){
             // _animator.SetTrigger("Jump");
             _wallJumping = true;
-            _falling = false;
+            // _falling = false;
             _gravityScale = 3;
             _jumpTime = 0;
         }
-        if (_wallJumping){   
+        if (_wallJumping){  
             rb2d.velocity = new Vector2(_wallpoint.normal.x * _speed * _wallJumpForce * Time.deltaTime,
                                         (_jumpAmount * _wallJumpForceUp) * Time.deltaTime);
             _wallJumpTime += Time.deltaTime;
             horizontalInputBool = false;
         }
-
         if (_wallJumpTime > _jumpButtonTime){
             _wallJumping = false;
             _falling = true;
