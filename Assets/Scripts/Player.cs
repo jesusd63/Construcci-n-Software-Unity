@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
-
 public class Player : MonoBehaviour{
     private Rigidbody2D rb2d;
     public Transform spawnPoint;
@@ -18,7 +17,6 @@ public class Player : MonoBehaviour{
     private float _gravityScale=3;
     private float _maxgravityScale = 50f;
     //WallJump
-    private bool canWallJump=false;
     private bool jumping = false;
     private bool _falling = true;
     float _jumpTime;
