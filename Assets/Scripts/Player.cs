@@ -50,6 +50,8 @@ public class Player : MonoBehaviour{
     //Sound
     public AudioClip soundClip;
     private AudioSource soundSource;
+    //Pause
+    private bool paused = false;
 
 
 
@@ -100,6 +102,10 @@ public class Player : MonoBehaviour{
         Jump();
 
         WallJump();
+
+        if(Input.GetButtonDown("Cancel")){
+            Pause();
+        }
 
         switch (dashState){
              case DashState.Ready:
@@ -251,6 +257,17 @@ public class Player : MonoBehaviour{
         }
         if(_dashCooldown < 0){
             canDash = true;
+        }
+    }
+
+    void Pause(){
+        if(paused){
+            Time.timeScale = 1;
+            paused = !paused;
+        }
+        else{
+            Time.timeScale = 0;
+            paused = !paused;
         }
     }
      private void OnCollisionEnter2D(Collision2D collision){
