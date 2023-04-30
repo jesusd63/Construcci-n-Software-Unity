@@ -220,8 +220,12 @@ public class Player : MonoBehaviour{
             _wallJumpTime = 0;
         }
         if (_wallJumping){  
-            rb2d.velocity = new Vector2(_wallpoint.normal.x * _jumpAmount, _jumpAmount);
-            _wallJumpTime += Time.deltaTime;
+            if((leftHit||rightHit) && (_wallJumpTime > 0.1f)){
+                _wallJumping = false;
+            }else{
+                rb2d.velocity = new Vector2(_wallpoint.normal.x * _jumpAmount, _jumpAmount);
+                _wallJumpTime += Time.deltaTime;
+            }
         }
         if (_wallJumpTime > _jumpButtonTime || Input.GetButtonUp("Jump")){
             _wallJumping = false;
