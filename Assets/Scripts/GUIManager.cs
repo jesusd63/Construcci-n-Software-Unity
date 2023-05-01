@@ -4,16 +4,23 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-
-public class StartButton : MonoBehaviour{    
+public class GUIManager : MonoBehaviour
+{
+    
     [SerializeField]
     private string sceneName;
-    public Button myButton; 
-  void Start(){
-        myButton.onClick.AddListener(LoadScene);
+    
+    void Start()
+    {
+        
     }
 
-    void LoadScene(){
+    public void StartGame(){
         SceneManager.LoadScene(sceneName);
     }
+
+    public void Quit(){
+        Application.Quit();
+    }
+
 }
