@@ -7,6 +7,7 @@ public class Player : MonoBehaviour{
     private Rigidbody2D rb2d;
     public Transform spawnPoint;
     private Animator _animator;
+    private SpriteRenderer _renderer;
     //Movement
     private int _speed=60;
     private float horizontalInput;
@@ -60,6 +61,7 @@ public class Player : MonoBehaviour{
         Assert.IsNotNull(rb2d);
         _animator = GetComponent<Animator>();
         soundSource = GetComponent<AudioSource>();
+        _renderer = GetComponent<SpriteRenderer>();
         // Application.targetFrameRate = targetFrameRate;
         Screen.SetResolution(1920, 1080, true);
 
@@ -82,10 +84,10 @@ public class Player : MonoBehaviour{
 
         _animator.SetFloat("speed", final);
         if(final < 0){
-            _animator.SetBool("left", true);
+            _renderer.flipX = true;
         }
         else{
-            _animator.SetBool("left", false);
+            _renderer.flipX = false;
         }
 
         if (CheckGrounded()){
@@ -172,6 +174,7 @@ public class Player : MonoBehaviour{
         // OnDrawGizmos();
         if(Physics2D.BoxCast(transform.position,boxSize,0,-transform.up,maxDistance,layerMask)){
             return true;
+            _animator.SetTrigger("Grounded");
         }else{
             
             return false;
@@ -180,7 +183,7 @@ public class Player : MonoBehaviour{
 
     void Jump(){
         if (Input.GetButtonDown("Jump") && CheckGrounded()){
-            // _animator.SetTrigger("Jump");
+            _animator.SetTrigger("Jump");
             rb2d.AddForce(new Vector2(0, 5), ForceMode2D.Impulse);
             jumping = true;
             _jumpTime = 0;
@@ -193,6 +196,7 @@ public class Player : MonoBehaviour{
         if( _jumpTime > _buttonTime || Input.GetButtonUp("Jump")){
             jumping = false;
             _falling = true;
+            _animator.SetTrigger("Falling");
         }
         if(_falling){
             if(_gravityScale < _maxgravityScale){
@@ -201,6 +205,7 @@ public class Player : MonoBehaviour{
         }
         if(!_falling){
             _gravityScale = 3;
+            _animator.SetTrigger("Grounded");
         }
     }
 
@@ -214,7 +219,7 @@ public class Player : MonoBehaviour{
             _canWallJump = false;
         }
         if (Input.GetButtonDown("Jump") && _canWallJump){
-            // _animator.SetTrigger("Jump");
+            _animator.SetTrigger("Jump");
             _wallJumping = true;
             rb2d.AddForce(new Vector2(_wallpoint.normal.x * 5, 5), ForceMode2D.Impulse);
             _wallJumpTime = 0;
@@ -274,12 +279,18 @@ public class Player : MonoBehaviour{
             paused = !paused;
         }
     }
+    void Respawn(){
+        transform.position = spawnPoint.position;
+        transform.rotation = spawnPoint.rotation;
+        _animator.SetTrigger("Respawn");
+    }
+    void Alive(){
+        horizontalInputBool = true;
+    }
      private void OnCollisionEnter2D(Collision2D collision){
         if(collision.gameObject.CompareTag("Spikes")){
-            transform.position = spawnPoint.position;
-            transform.rotation = spawnPoint.rotation;
-            rb2d.velocity = Vector2.zero;
-            rb2d.angularVelocity = 0f;
+            _animator.SetTrigger("Death");
+            horizontalInputBool = false;
         }
     }
     private void OnTriggerEnter2D(Collider2D collision){
