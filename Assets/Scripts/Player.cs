@@ -83,12 +83,17 @@ public class Player : MonoBehaviour{
 
 
         _animator.SetFloat("speed", final);
-        if(final < 0){
-            _renderer.flipX = true;
-        }
-        else{
+        if(rb2d.velocity.x > 0f){
             _renderer.flipX = false;
-        }
+        }else if(rb2d.velocity.x < 0f){
+            _renderer.flipX = true;
+        }else{}
+        // if(final < 0){
+        //     _renderer.flipX = true;
+        // }else if(final ==0 ){}
+        // else{
+        //     _renderer.flipX = false;
+        // }
 
         if (CheckGrounded()){
             _gravityScale = 3;
@@ -173,8 +178,8 @@ public class Player : MonoBehaviour{
     bool CheckGrounded(){
         // OnDrawGizmos();
         if(Physics2D.BoxCast(transform.position,boxSize,0,-transform.up,maxDistance,layerMask)){
-            return true;
             _animator.SetTrigger("Grounded");
+            return true;
         }else{
             
             return false;
