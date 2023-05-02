@@ -275,7 +275,11 @@ MonoBehaviour:
   _sound_dash: {fileID: 8300000, guid: 33c56c5c3ac58ab4a9a158e5f26b5358, type: 3}
   _sound_jump: {fileID: 8300000, guid: 1dec54194a92019409a8c1ead3f939fb, type: 3}
   _sound_death: {fileID: 8300000, guid: 852f8556911c43a4da700d440400222d, type: 3}
+  paused: 0
   pauseMenu: {fileID: 5624967760636616866, guid: 3cbc1ce7d7dee164db925a8d48072c92, type: 3}
+  _eventoPausa:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!50 &6589913851356457892
 Rigidbody2D:
   serializedVersion: 4

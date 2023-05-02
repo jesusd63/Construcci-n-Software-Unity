@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
+using UnityEngine.Events;
+
+
 public class Player : MonoBehaviour{
     private Rigidbody2D rb2d;
     public Transform spawnPoint;
@@ -57,15 +60,10 @@ public class Player : MonoBehaviour{
     public AudioClip _sound_jump;
     public AudioClip _sound_death;
     private AudioSource soundSource;
-    //Pause
-    public bool paused = false;    
-    public GameObject pauseMenu;
 
     //soundSource.PlayOneShot(_sound_dash);
 
     void Start(){
-        pauseMenu.SetActive(false);
-        paused=false;
         trail.GetComponent<TrailRenderer>();
         trail.emitting = false;
         rb2d = GetComponent<Rigidbody2D>();
@@ -117,10 +115,6 @@ public class Player : MonoBehaviour{
         Jump();
 
         WallJump();
-
-        if(Input.GetButtonDown("Cancel")){
-            Pause();
-        }
 
         switch (dashState){
              case DashState.Ready:
@@ -299,18 +293,6 @@ public class Player : MonoBehaviour{
         }
     }
 
-    public void Pause(){
-        if(paused){
-            Time.timeScale = 1;
-            paused = !paused;
-            pauseMenu.SetActive(false);
-        }
-        else{
-            pauseMenu.SetActive(true);
-            Time.timeScale = 0;
-            paused = !paused;
-        }
-    }
     void Respawn(){
         transform.position = spawnPoint.position;
         transform.rotation = spawnPoint.rotation;
