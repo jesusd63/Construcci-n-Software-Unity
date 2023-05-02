@@ -61,6 +61,8 @@ public class Player : MonoBehaviour{
     private bool paused = false;    
     public GameObject pauseMenu;
 
+    //soundSource.PlayOneShot(_sound_dash);
+
     void Start(){
         pauseMenu.SetActive(false);
         // trail.SetActive(false);
