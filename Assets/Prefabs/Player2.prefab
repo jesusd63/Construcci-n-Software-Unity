@@ -130,7 +130,10 @@ MonoBehaviour:
   layerMask:
     serializedVersion: 2
     m_Bits: 64
-  soundClip: {fileID: 8300000, guid: f6f5db9161889884d82c8604d74cbe50, type: 3}
+  _sound_dash: {fileID: 8300000, guid: 2b059dc9cb9de2241a230412b80b92a4, type: 3}
+  _sound_jump: {fileID: 8300000, guid: 4ea27f4553ff56f478825e672dc1fd2c, type: 3}
+  _sound_death: {fileID: 8300000, guid: 35b273c5d99439249a22c3220091a022, type: 3}
+  pauseMenu: {fileID: 0}
 --- !u!50 &6589913851356457892
 Rigidbody2D:
   serializedVersion: 4

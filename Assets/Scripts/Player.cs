@@ -52,7 +52,9 @@ public class Player : MonoBehaviour{
     private Vector3 boxSize= new Vector3(.6f,0.1f,0);
     private float maxDistance=0.7f;
     //Sound
-    public AudioClip soundClip;
+    public AudioClip _sound_dash;
+    public AudioClip _sound_jump;
+    public AudioClip _sound_death;
     private AudioSource soundSource;
     //Pause
     private bool paused = false;    
@@ -122,7 +124,7 @@ public class Player : MonoBehaviour{
              case DashState.Ready:
                  var isDashKeyDown = Input.GetKeyDown(KeyCode.X);
                  if (isDashKeyDown){
-                    soundSource.PlayOneShot(soundClip);
+                    soundSource.PlayOneShot(_sound_dash);
                     _dashingTime = 0;
                     dashState = DashState.Dashing;
                     savedVelocity = rb2d.velocity;
@@ -199,6 +201,7 @@ public class Player : MonoBehaviour{
     void Jump(){
         if (Input.GetButtonDown("Jump") && CheckGrounded()){
             _animator.SetTrigger("Jump");
+            soundSource.PlayOneShot(_sound_jump);
             rb2d.AddForce(new Vector2(0, 5), ForceMode2D.Impulse);
             jumping = true;
             _jumpTime = 0;
@@ -313,6 +316,7 @@ public class Player : MonoBehaviour{
      private void OnCollisionEnter2D(Collision2D collision){
         if(collision.gameObject.CompareTag("Spikes")){
             _animator.SetTrigger("Death");
+            soundSource.PlayOneShot(_sound_death);
             horizontalInputBool = false;
         }
     }
