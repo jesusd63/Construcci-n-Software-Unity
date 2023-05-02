@@ -23,4 +23,12 @@ public class GUIManager : MonoBehaviour
         Application.Quit();
     }
 
+    public void Settings(){
+        SceneManager.LoadScene("Settings");
+    }
+
+    public void Inicio(){
+        SceneManager.LoadScene("Inicio");
+    }
+
 }
