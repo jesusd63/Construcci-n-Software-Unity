@@ -27,4 +27,8 @@ public class GUIManager : MonoBehaviour
         SceneManager.LoadScene("Settings");
     }
 
+    public void Inicio(){
+        SceneManager.LoadScene("Inicio");
+    }
+
 }
