@@ -9,10 +9,15 @@ public class GUIManager : MonoBehaviour
     
     [SerializeField]
     private string sceneName;
+
+    public GameObject pauseMenu;
+
+    public Player player;
     
-    void Start()
-    {
-        
+    void Start(){
+        pauseMenu.SetActive(false);
+        player=GetComponent<Player>();
+        Debug.Log(player);
     }
 
     public void StartGame(){
@@ -25,11 +30,22 @@ public class GUIManager : MonoBehaviour
     }
 
     public void Settings(){
-        SceneManager.LoadScene("Settings");
+        pauseMenu.SetActive(true);
     }
 
     public void Inicio(){
         SceneManager.LoadScene("Inicio");
     }
-
+    public void Restart(){
+        Time.timeScale = 1;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+    public void Continue(){
+        //MAL
+        // if(player==null){
+        //     pauseMenu.SetActive(false);
+        // }else{
+        //         player.Pause();
+        // }
+    }
 }

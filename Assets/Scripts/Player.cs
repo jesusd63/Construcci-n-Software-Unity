@@ -58,7 +58,7 @@ public class Player : MonoBehaviour{
     public AudioClip _sound_death;
     private AudioSource soundSource;
     //Pause
-    private bool paused = false;    
+    public bool paused = false;    
     public GameObject pauseMenu;
 
     //soundSource.PlayOneShot(_sound_dash);
@@ -299,7 +299,7 @@ public class Player : MonoBehaviour{
         }
     }
 
-    void Pause(){
+    public void Pause(){
         if(paused){
             Time.timeScale = 1;
             paused = !paused;
