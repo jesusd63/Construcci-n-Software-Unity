@@ -47,7 +47,7 @@ public class Player : MonoBehaviour{
     private float dashTimer;
     private float maxDash = .35f;
     public Vector2 savedVelocity;
-    public GameObject trail;
+    public TrailRenderer trail;
     //Floor check
     public LayerMask layerMask;
     private Vector3 boxSize= new Vector3(.6f,0.1f,0);
@@ -63,7 +63,9 @@ public class Player : MonoBehaviour{
 
     void Start(){
         pauseMenu.SetActive(false);
-        trail.SetActive(false);
+        // trail.SetActive(false);
+        trail.GetComponent<TrailRenderer>();
+        trail.emitting = false;
         rb2d = GetComponent<Rigidbody2D>();
         Assert.IsNotNull(rb2d);
         _animator = GetComponent<Animator>();
@@ -132,7 +134,8 @@ public class Player : MonoBehaviour{
                  }
                  break;
              case DashState.Dashing:
-                 trail.SetActive(true);
+                //  trail.SetActive(true);
+                trail.emitting = true;
                  dashTimer += Time.deltaTime * 3;
                  _falling = false;
                  if(horizontalInput == 0 && verticalInput == 0){
@@ -146,7 +149,8 @@ public class Player : MonoBehaviour{
                 
                  if (dashTimer >= maxDash)
                  {
-                     trail.SetActive(false);
+                    //  trail.SetActive(false);
+                    trail.emitting = false;
                      dashTimer = maxDash;
                      rb2d.velocity = savedVelocity;
                      if(!CheckGrounded()){
