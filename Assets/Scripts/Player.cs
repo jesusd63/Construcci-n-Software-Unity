@@ -65,7 +65,7 @@ public class Player : MonoBehaviour{
 
     void Start(){
         pauseMenu.SetActive(false);
-        // trail.SetActive(false);
+        paused=false;
         trail.GetComponent<TrailRenderer>();
         trail.emitting = false;
         rb2d = GetComponent<Rigidbody2D>();
