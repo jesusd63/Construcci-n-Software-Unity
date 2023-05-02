@@ -58,10 +58,6 @@ public class Player : MonoBehaviour{
     private bool paused = false;    
     public GameObject pauseMenu;
 
-
-
-
-
     void Start(){
         pauseMenu.SetActive(false);
         rb2d = GetComponent<Rigidbody2D>();
