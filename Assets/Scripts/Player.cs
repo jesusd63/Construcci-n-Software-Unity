@@ -17,6 +17,9 @@ public class Player : MonoBehaviour{
     private int _jumpAmount=8;
     private float _gravityScale=3;
     private float _maxgravityScale = 50f;
+    //Top Check
+    private Vector3 boxSizeTop= new Vector3(0.8f,0.1f,0);
+    private float maxDistanceTop=0.8f;
     //WallJump
     private bool jumping = false;
     private bool _falling = true;
@@ -52,11 +55,15 @@ public class Player : MonoBehaviour{
     public AudioClip soundClip;
     private AudioSource soundSource;
     //Pause
-    private bool paused = false;
+    private bool paused = false;    
+    public GameObject pauseMenu;
+
+
 
 
 
     void Start(){
+        pauseMenu.SetActive(false);
         rb2d = GetComponent<Rigidbody2D>();
         Assert.IsNotNull(rb2d);
         _animator = GetComponent<Animator>();
@@ -64,9 +71,7 @@ public class Player : MonoBehaviour{
         _renderer = GetComponent<SpriteRenderer>();
         // Application.targetFrameRate = targetFrameRate;
         Screen.SetResolution(1920, 1080, true);
-
     }
-
     void Update(){
         if(horizontalInputBool && !_dashing){
             horizontalInput = Input.GetAxis("Horizontal");
@@ -80,7 +85,6 @@ public class Player : MonoBehaviour{
         Vector2 movement = new Vector2(horizontalInput, 0) * Time.deltaTime * _speed;
         //rb2d.velocity = movement;
         rb2d.AddForce(movement, ForceMode2D.Impulse);
-
 
         _animator.SetFloat("speed", final);
         if(rb2d.velocity.x > 0f){
@@ -168,12 +172,18 @@ public class Player : MonoBehaviour{
      }
 
     void OnDrawGizmos() {
+        //floor
         Gizmos.color = Color.red;
         Gizmos.DrawCube(transform.position-transform.up*maxDistance, boxSize);
+        //wall left
         Gizmos.color = Color.blue;
         Gizmos.DrawCube(transform.position-transform.right*maxDistanceWall, boxSizeWall);
+        //wall right
         Gizmos.color = Color.green;
         Gizmos.DrawCube(transform.position+transform.right*maxDistanceWall, boxSizeWall);
+        //top
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawCube(transform.position+transform.up*maxDistanceTop, boxSizeTop);
     }
     bool CheckGrounded(){
         // OnDrawGizmos();
@@ -193,10 +203,16 @@ public class Player : MonoBehaviour{
             jumping = true;
             _jumpTime = 0;
         }
+        RaycastHit2D hitTop = Physics2D.BoxCast(transform.position,boxSizeTop,0,transform.up,maxDistanceTop,wallLayerMask);
         if(jumping){
-            rb2d.velocity = new Vector2(rb2d.velocity.x, _jumpAmount + 1);
+            if(hitTop){
+                jumping = false;
+
+            }else{
+             rb2d.velocity = new Vector2(rb2d.velocity.x, _jumpAmount + 1);
             _jumpTime += Time.deltaTime;
-        }
+            }
+    }
 
         if( _jumpTime > _buttonTime || Input.GetButtonUp("Jump")){
             jumping = false;
@@ -278,8 +294,10 @@ public class Player : MonoBehaviour{
         if(paused){
             Time.timeScale = 1;
             paused = !paused;
+            pauseMenu.SetActive(false);
         }
         else{
+            pauseMenu.SetActive(true);
             Time.timeScale = 0;
             paused = !paused;
         }
