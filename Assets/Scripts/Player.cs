@@ -76,7 +76,6 @@ public class Player : MonoBehaviour{
         // Application.targetFrameRate = targetFrameRate;
         Screen.SetResolution(1920, 1080, true);
 
-        print(SpawnIndex._spawnindex);
         if(SpawnIndex._spawnindex == 1){
             transform.position = spawnPoint2.position;
             transform.rotation = spawnPoint2.rotation;
@@ -85,6 +84,7 @@ public class Player : MonoBehaviour{
             transform.position = spawnPoint.position;
             transform.rotation = spawnPoint.rotation;
         }
+        horizontalInputBool = true;
     }
     void Update(){
         if(horizontalInputBool && !_dashing){
@@ -236,6 +236,7 @@ public class Player : MonoBehaviour{
         }
         if (Input.GetButtonDown("Jump") && _canWallJump){
             _animator.SetTrigger("Jump");
+            soundSource.PlayOneShot(_sound_jump);
             _wallJumping = true;
             rb2d.AddForce(new Vector2(_wallpoint.normal.x * 5, 5), ForceMode2D.Impulse);
             _wallJumpTime = 0;
@@ -286,7 +287,7 @@ public class Player : MonoBehaviour{
     }
 
     void Respawn(){
-        print(SpawnIndex._spawnindex);
+        horizontalInputBool = true;
         if(SpawnIndex._spawnindex == 1){
             transform.position = spawnPoint2.position;
             transform.rotation = spawnPoint2.rotation;
