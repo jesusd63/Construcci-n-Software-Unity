@@ -171,7 +171,6 @@ public class Player : MonoBehaviour{
                  }
                  break;
          }
-
     }
 
      public enum DashState{
@@ -179,7 +178,6 @@ public class Player : MonoBehaviour{
      Dashing,
      Cooldown
      }
-
     bool CheckGrounded(){
         if(Physics2D.BoxCast(transform.position,boxSize,0,-transform.up,maxDistance,layerMask)){
             _animator.SetTrigger("Grounded");
