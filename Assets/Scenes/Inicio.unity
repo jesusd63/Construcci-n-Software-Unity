@@ -529,35 +529,31 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 38395365853587227, guid: 3cbc1ce7d7dee164db925a8d48072c92, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 38395365853587227, guid: 3cbc1ce7d7dee164db925a8d48072c92, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 0}
-      propertyPath: pauseMenu
-      value: 
-      objectReference: {fileID: 1783314483}
     - target: {fileID: 1586727769969035139, guid: 3cbc1ce7d7dee164db925a8d48072c92, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1586727769969035139, guid: 3cbc1ce7d7dee164db925a8d48072c92, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1586727769969035139, guid: 3cbc1ce7d7dee164db925a8d48072c92, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4005366426746183145, guid: 3cbc1ce7d7dee164db925a8d48072c92, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4005366426746183145, guid: 3cbc1ce7d7dee164db925a8d48072c92, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4299341965605246132, guid: 3cbc1ce7d7dee164db925a8d48072c92, type: 3}
       propertyPath: m_LocalPosition.z
@@ -669,15 +665,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6225720432041823777, guid: 3cbc1ce7d7dee164db925a8d48072c92, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6225720432041823777, guid: 3cbc1ce7d7dee164db925a8d48072c92, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6225720432041823777, guid: 3cbc1ce7d7dee164db925a8d48072c92, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7809851090575548653, guid: 3cbc1ce7d7dee164db925a8d48072c92, type: 3}
       propertyPath: m_LocalPosition.z
@@ -714,7 +710,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8194629261814691279, guid: 3cbc1ce7d7dee164db925a8d48072c92, type: 3}
   m_PrefabInstance: {fileID: 656133425}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1783314483}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 979a98182310c2c49a95b8bf20eecc70, type: 3}
@@ -1023,8 +1019,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1439138886}
-        m_TargetAssemblyTypeName: GUIManager, Assembly-CSharp
+      - m_Target: {fileID: 656133426}
+        m_TargetAssemblyTypeName: PauseMenu, Assembly-CSharp
         m_MethodName: Quit
         m_Mode: 1
         m_Arguments:
@@ -1226,8 +1222,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.0050468, y: -10}
-  m_SizeDelta: {x: 1920, y: 1080}
+  m_AnchoredPosition: {x: -0.0050468, y: 6.65}
+  m_SizeDelta: {x: 1920, y: 1095.3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1217857548
 MonoBehaviour:
@@ -1297,6 +1293,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneName: Start
+  _music_mixer: {fileID: 24100000, guid: eea6e08fe3bed0544b79217d3a021f3b, type: 2}
+  _sound_mixer: {fileID: 24100000, guid: 98c330343b543a74d884724f13e45747, type: 2}
 --- !u!4 &1439138887
 Transform:
   m_ObjectHideFlags: 0
@@ -1721,11 +1719,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1769775252}
   m_CullTransparentMesh: 1
---- !u!1 &1783314483 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5624967760636616866, guid: 3cbc1ce7d7dee164db925a8d48072c92, type: 3}
-  m_PrefabInstance: {fileID: 656133425}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1830507940
 GameObject:
   m_ObjectHideFlags: 0

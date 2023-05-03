@@ -23,7 +23,6 @@ public class SetVolume : MonoBehaviour
     }
 
     public void SetSoundVol (float sliderValue){
-        print("SLIDER MOVE");
         _sound_mixer.SetFloat("SoundsVol", Mathf.Log10(sliderValue) * 20);
         PlayerPrefs.SetFloat("SoundsVolume", sliderValue);
     }

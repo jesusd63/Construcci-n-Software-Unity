@@ -5,10 +5,14 @@ using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
 using UnityEngine.Events;
 
+public static class SpawnIndex {
+    public static int _spawnindex { get; set; }
+}
 
 public class Player : MonoBehaviour{
     private Rigidbody2D rb2d;
     public Transform spawnPoint;
+    public Transform spawnPoint2;
     private Animator _animator;
     private SpriteRenderer _renderer;
     //Movement
@@ -61,8 +65,6 @@ public class Player : MonoBehaviour{
     public AudioClip _sound_death;
     private AudioSource soundSource;
 
-    //soundSource.PlayOneShot(_sound_dash);
-
     void Start(){
         trail.GetComponent<TrailRenderer>();
         trail.emitting = false;
@@ -73,6 +75,16 @@ public class Player : MonoBehaviour{
         _renderer = GetComponent<SpriteRenderer>();
         // Application.targetFrameRate = targetFrameRate;
         Screen.SetResolution(1920, 1080, true);
+
+        print(SpawnIndex._spawnindex);
+        if(SpawnIndex._spawnindex == 1){
+            transform.position = spawnPoint2.position;
+            transform.rotation = spawnPoint2.rotation;
+        }
+        else{
+            transform.position = spawnPoint.position;
+            transform.rotation = spawnPoint.rotation;
+        }
     }
     void Update(){
         if(horizontalInputBool && !_dashing){
@@ -85,7 +97,6 @@ public class Player : MonoBehaviour{
 
         float final = _speed*horizontalInput;
         Vector2 movement = new Vector2(horizontalInput, 0) * Time.deltaTime * _speed;
-        //rb2d.velocity = movement;
         rb2d.AddForce(movement, ForceMode2D.Impulse);
 
         _animator.SetFloat("speed", final);
@@ -94,12 +105,6 @@ public class Player : MonoBehaviour{
         }else if(rb2d.velocity.x < 0f){
             _renderer.flipX = true;
         }else{}
-        // if(final < 0){
-        //     _renderer.flipX = true;
-        // }else if(final ==0 ){}
-        // else{
-        //     _renderer.flipX = false;
-        // }
 
         if (CheckGrounded()){
             _gravityScale = 3;
@@ -124,7 +129,6 @@ public class Player : MonoBehaviour{
                     _dashingTime = 0;
                     dashState = DashState.Dashing;
                     savedVelocity = rb2d.velocity;
-                    //  rb2d.AddForce(new Vector2(rb2d.velocity.x * dashForce, rb2d.velocity.y));
                      rb2d.velocity = new Vector2(0,0);
                      dashState = DashState.Dashing; 
                  }
@@ -135,12 +139,15 @@ public class Player : MonoBehaviour{
                  dashTimer += Time.deltaTime * 3;
                  _falling = false;
                  if(horizontalInput == 0 && verticalInput == 0){
-                    rb2d.AddForce(new Vector2(_speed *dashForce * 5 * Time.deltaTime, 0), ForceMode2D.Impulse);
-                    // rb2d.velocity = new Vector2(_speed *dashForce * 5 * Time.deltaTime, 0); 
+                    if(!_renderer.flipX){
+                        rb2d.AddForce(new Vector2(_speed *dashForce * 5 * Time.deltaTime, 0), ForceMode2D.Impulse);
+                    }
+                    else{
+                        rb2d.AddForce(new Vector2(_speed *dashForce * -5 * Time.deltaTime, 0), ForceMode2D.Impulse);
+                    }
                  }
                  else{
                     rb2d.AddForce(new Vector2(horizontalInput * _speed *dashForce * 4 * Time.deltaTime, verticalInput * _speed * Time.deltaTime * 5), ForceMode2D.Impulse);
-                    // rb2d.velocity = new Vector2(horizontalInput * _speed *dashForce * 4 * Time.deltaTime, verticalInput * _speed * 5 * Time.deltaTime);
                  }
                 
                  if (dashTimer >= maxDash)
@@ -173,22 +180,7 @@ public class Player : MonoBehaviour{
      Cooldown
      }
 
-    void OnDrawGizmos() {
-        //floor
-        Gizmos.color = Color.red;
-        Gizmos.DrawCube(transform.position-transform.up*maxDistance, boxSize);
-        //wall left
-        Gizmos.color = Color.blue;
-        Gizmos.DrawCube(transform.position-transform.right*maxDistanceWall, boxSizeWall);
-        //wall right
-        Gizmos.color = Color.green;
-        Gizmos.DrawCube(transform.position+transform.right*maxDistanceWall, boxSizeWall);
-        //top
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawCube(transform.position+transform.up*maxDistanceTop, boxSizeTop);
-    }
     bool CheckGrounded(){
-        // OnDrawGizmos();
         if(Physics2D.BoxCast(transform.position,boxSize,0,-transform.up,maxDistance,layerMask)){
             _animator.SetTrigger("Grounded");
             return true;
@@ -294,8 +286,15 @@ public class Player : MonoBehaviour{
     }
 
     void Respawn(){
-        transform.position = spawnPoint.position;
-        transform.rotation = spawnPoint.rotation;
+        print(SpawnIndex._spawnindex);
+        if(SpawnIndex._spawnindex == 1){
+            transform.position = spawnPoint2.position;
+            transform.rotation = spawnPoint2.rotation;
+        }
+        else{
+            transform.position = spawnPoint.position;
+            transform.rotation = spawnPoint.rotation;
+        }
         _animator.SetTrigger("Respawn");
     }
     void Alive(){
@@ -311,6 +310,7 @@ public class Player : MonoBehaviour{
     private void OnTriggerEnter2D(Collider2D collision){
         if(collision.gameObject.CompareTag("exit")){
             _scene = collision.gameObject.GetComponent<Exit>()._new_scene; 
+            SpawnIndex._spawnindex = collision.gameObject.GetComponent<Exit>()._spawn;
             SceneManager.LoadScene(_scene);
         }
     }
