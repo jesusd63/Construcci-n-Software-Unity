@@ -3,71 +3,90 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
+using UnityEngine.Events;
+
+public static class SpawnIndex {
+    public static int _spawnindex { get; set; }
+}
 
 public class Player : MonoBehaviour{
     private Rigidbody2D rb2d;
     public Transform spawnPoint;
+    public Transform spawnPoint2;
     private Animator _animator;
-
-    [SerializeField]
-    private int _speed=3;
-
-    private int _jumpAmount=9;
-
-    [SerializeField]
+    private SpriteRenderer _renderer;
+    //Movement
+    private int _speed=60;
+    private float horizontalInput;
+    private float verticalInput;
+    private bool horizontalInputBool = true;
+    //Jump
+    private int _jumpAmount=8;
     private float _gravityScale=3;
-
-    [SerializeField]
-    private int _wallJumpForce = 36;
-
-    // private bool isGrounded=false;
-    // private bool jumped=false;
-    private bool canWallJump;
-
+    private float _maxgravityScale = 50f;
+    //Top Check
+    private Vector3 boxSizeTop= new Vector3(0.8f,0.1f,0);
+    private float maxDistanceTop=0.8f;
+    //WallJump
     private bool jumping = false;
     private bool _falling = true;
     float _jumpTime;
     private float _buttonTime = .25f;
-    private float _jumpButtonTime = .25f;
-    public ContactPoint2D _wallpoint; 
-    private float horizontalInput;
-    private float verticalInput;
+    private float _jumpButtonTime = .2f;
     private bool _wallJumping;
     private float _wallJumpTime;
-    private bool horizontalInputBool = true;
+    //Wall check
+    public LayerMask wallLayerMask;
+    private Vector3 boxSizeWall= new Vector3(0.2f,1.4f,0);
+    private float maxDistanceWall=0.4f;
+    private bool _canWallJump;
+    private RaycastHit2D _wallpoint;
+    //Scene
     private string _scene;
-
+    //Dash
     private bool _dashing;
     private float _dashCooldown=0;
     private bool canDash=true;
     private float _dashingTime;
-    [SerializeField]
-    private float _dashForce = 3.5f;
-    
-    private float _maxgravityScale = 40f;
-    public LayerMask layerMask;
-    private Vector3 boxSize= new Vector3(.6f,0.1f,0);
-    private float maxDistance=0.8f;
-
-
-
+    private float _dashForce = 50;
     public DashState dashState;
     private float dashForce = 2;
     private float dashTimer;
     private float maxDash = .35f;
     public Vector2 savedVelocity;
-    private int targetFrameRate = 142;
+    public TrailRenderer trail;
+    //Floor check
+    public LayerMask layerMask;
+    private Vector3 boxSize= new Vector3(.6f,0.1f,0);
+    private float maxDistance=0.7f;
+    //Sound
+    public AudioClip _sound_dash;
+    public AudioClip _sound_jump;
+    public AudioClip _sound_death;
+    private AudioSource soundSource;
+
     void Start(){
+        trail.GetComponent<TrailRenderer>();
+        trail.emitting = false;
         rb2d = GetComponent<Rigidbody2D>();
         Assert.IsNotNull(rb2d);
         _animator = GetComponent<Animator>();
-        Application.targetFrameRate = targetFrameRate;
+        soundSource = GetComponent<AudioSource>();
+        _renderer = GetComponent<SpriteRenderer>();
+        // Application.targetFrameRate = targetFrameRate;
         Screen.SetResolution(1920, 1080, true);
 
+        if(SpawnIndex._spawnindex == 1){
+            transform.position = spawnPoint2.position;
+            transform.rotation = spawnPoint2.rotation;
+        }
+        else{
+            transform.position = spawnPoint.position;
+            transform.rotation = spawnPoint.rotation;
+        }
+        horizontalInputBool = true;
     }
-
     void Update(){
-
         if(horizontalInputBool && !_dashing){
             horizontalInput = Input.GetAxis("Horizontal");
             verticalInput = Input.GetAxis("Vertical");
@@ -80,14 +99,12 @@ public class Player : MonoBehaviour{
         Vector2 movement = new Vector2(horizontalInput, 0) * Time.deltaTime * _speed;
         rb2d.AddForce(movement, ForceMode2D.Impulse);
 
-
         _animator.SetFloat("speed", final);
-        if(final < 0){
-            _animator.SetBool("left", true);
-        }
-        else{
-            _animator.SetBool("left", false);
-        }
+        if(rb2d.velocity.x > 0f){
+            _renderer.flipX = false;
+        }else if(rb2d.velocity.x < 0f){
+            _renderer.flipX = true;
+        }else{}
 
         if (CheckGrounded()){
             _gravityScale = 3;
@@ -98,45 +115,45 @@ public class Player : MonoBehaviour{
             }
         }
 
-        rb2d.AddForce(Physics.gravity * (_gravityScale) * rb2d.mass);
+        rb2d.AddForce(Physics.gravity * (_gravityScale) * rb2d.mass * Time.deltaTime);
 
         Jump();
 
         WallJump();
-        //Dash();
 
-        switch (dashState)
-         {
+        switch (dashState){
              case DashState.Ready:
                  var isDashKeyDown = Input.GetKeyDown(KeyCode.X);
                  if (isDashKeyDown){
-                     savedVelocity = rb2d.velocity;
-                    //  rb2d.AddForce(new Vector2(rb2d.velocity.x * dashForce, rb2d.velocity.y));
-                     dashState = DashState.Dashing;
+                    soundSource.PlayOneShot(_sound_dash);
+                    _dashingTime = 0;
+                    dashState = DashState.Dashing;
+                    savedVelocity = rb2d.velocity;
+                     rb2d.velocity = new Vector2(0,0);
+                     dashState = DashState.Dashing; 
                  }
                  break;
              case DashState.Dashing:
+                //  trail.SetActive(true);
+                trail.emitting = true;
                  dashTimer += Time.deltaTime * 3;
                  _falling = false;
                  if(horizontalInput == 0 && verticalInput == 0){
-                    rb2d.velocity = new Vector2(1 * _speed *dashForce * 5, 0); 
+                    if(!_renderer.flipX){
+                        rb2d.AddForce(new Vector2(_speed *dashForce * 5 * Time.deltaTime, 0), ForceMode2D.Impulse);
+                    }
+                    else{
+                        rb2d.AddForce(new Vector2(_speed *dashForce * -5 * Time.deltaTime, 0), ForceMode2D.Impulse);
+                    }
                  }
                  else{
-                    rb2d.velocity = new Vector2(horizontalInput * _speed *dashForce * 4, verticalInput * _speed * 5);
+                    rb2d.AddForce(new Vector2(horizontalInput * _speed *dashForce * 4 * Time.deltaTime, verticalInput * _speed * Time.deltaTime * 5), ForceMode2D.Impulse);
                  }
-                //  if(horizontalInput == 0){
-                //     if(horizontalInput == 0){
-                //         rb2d.velocity = new Vector2(1 * _speed *dashForce * 5, 0); 
-                //     }
-                //     else{
-                //         rb2d.velocity = new Vector2(0, rb2d.velocity.y * _speed);
-                //     }
-                //  }
-                //  else{
-                //     rb2d.velocity = new Vector2(rb2d.velocity.x * _speed *dashForce, rb2d.velocity.y * _speed);
-                //  }
+                
                  if (dashTimer >= maxDash)
                  {
+                    //  trail.SetActive(false);
+                    trail.emitting = false;
                      dashTimer = maxDash;
                      rb2d.velocity = savedVelocity;
                      if(!CheckGrounded()){
@@ -161,13 +178,9 @@ public class Player : MonoBehaviour{
      Dashing,
      Cooldown
      }
-    void OnDrawGizmos() {
-        Gizmos.color = Color.red;
-        Gizmos.DrawCube(transform.position-transform.up*maxDistance, boxSize);
-    }
     bool CheckGrounded(){
-        // OnDrawGizmos();
         if(Physics2D.BoxCast(transform.position,boxSize,0,-transform.up,maxDistance,layerMask)){
+            _animator.SetTrigger("Grounded");
             return true;
         }else{
             
@@ -176,51 +189,69 @@ public class Player : MonoBehaviour{
     }
 
     void Jump(){
-        if (Input.GetButtonDown("Jump") && CheckGrounded()){ //&& !jumped){
+        if (Input.GetButtonDown("Jump") && CheckGrounded()){
             _animator.SetTrigger("Jump");
+            soundSource.PlayOneShot(_sound_jump);
             rb2d.AddForce(new Vector2(0, 5), ForceMode2D.Impulse);
             jumping = true;
             _jumpTime = 0;
-            // jumped = true;
         }
+        RaycastHit2D hitTop = Physics2D.BoxCast(transform.position,boxSizeTop,0,transform.up,maxDistanceTop,wallLayerMask);
         if(jumping){
-            rb2d.velocity = new Vector2(rb2d.velocity.x, _jumpAmount + 1);
+            if(hitTop){
+                jumping = false;
+
+            }else{
+             rb2d.velocity = new Vector2(rb2d.velocity.x, _jumpAmount + 1);
             _jumpTime += Time.deltaTime;
-        }
+            }
+    }
 
         if( _jumpTime > _buttonTime || Input.GetButtonUp("Jump")){
             jumping = false;
             _falling = true;
+            _animator.SetTrigger("Falling");
         }
         if(_falling){
             if(_gravityScale < _maxgravityScale){
-                _gravityScale = _gravityScale*1.06f;
+                _gravityScale = _gravityScale*1.1f;
             }
         }
         if(!_falling){
             _gravityScale = 3;
+            _animator.SetTrigger("Grounded");
         }
     }
 
     void WallJump(){
-        if(Input.GetButtonDown("Jump") && canWallJump){
-            // Debug.Log("Wall Jumping");
+        RaycastHit2D leftHit = Physics2D.BoxCast(transform.position, boxSize, 0, transform.right, maxDistanceWall, wallLayerMask);
+        RaycastHit2D rightHit = Physics2D.BoxCast(transform.position, boxSize, 0, -transform.right, maxDistanceWall, wallLayerMask);
+        if (leftHit || rightHit){
+            _wallpoint = leftHit  ? leftHit : rightHit;
+            _canWallJump = true;
+        } else {
+            _canWallJump = false;
+        }
+        if (Input.GetButtonDown("Jump") && _canWallJump){
+            _animator.SetTrigger("Jump");
+            soundSource.PlayOneShot(_sound_jump);
             _wallJumping = true;
-            _falling = false;
-            _gravityScale = 3;
-            _jumpTime = 0;
+            rb2d.AddForce(new Vector2(_wallpoint.normal.x * 5, 5), ForceMode2D.Impulse);
+            _wallJumpTime = 0;
         }
-        if(_wallJumping){
-            rb2d.velocity = new Vector2(_wallpoint.normal.x * _speed * _wallJumpForce, _jumpAmount + 1.3f);
-            _wallJumpTime += Time.deltaTime;
-            horizontalInputBool = false;
+        if (_wallJumping){  
+            if((leftHit||rightHit) && (_wallJumpTime > 0.1f)){
+                _wallJumping = false;
+            }else{
+                rb2d.velocity = new Vector2(_wallpoint.normal.x * _jumpAmount, _jumpAmount);
+                _wallJumpTime += Time.deltaTime;
+            }
         }
-        if(_wallJumpTime > _jumpButtonTime){
+        if (_wallJumpTime > _jumpButtonTime || Input.GetButtonUp("Jump")){
             _wallJumping = false;
             _falling = true;
-            _wallJumpTime = 0;
-            horizontalInputBool = true;
         }
+
     }
 
     void Dash(){
@@ -228,11 +259,6 @@ public class Player : MonoBehaviour{
             _dashing = true;
             canDash=false;
             _dashCooldown = 1.25f;
-            // if(rb2d.velocity.y > 0){
-            //     rb2d.velocity = new Vector2(0, rb2d.velocity.y);
-            // }else{
-            //     rb2d.velocity = Vector2.zero;
-            // }
         }
         if(_dashing){
             rb2d.velocity = Vector2.zero;
@@ -241,12 +267,6 @@ public class Player : MonoBehaviour{
             }
             _falling = false;
             rb2d.AddForce(new Vector2(horizontalInput * _dashForce *_speed, verticalInput * _dashForce *_speed));
-            // if(verticalInput == 0){
-            //     rb2d.velocity = new Vector2(rb2d.velocity.x + _dashForce*_speed , rb2d.velocity.y);
-            // }
-            // else{
-            //     rb2d.velocity = new Vector2(rb2d.velocity.x + _dashForce*_speed , verticalInput*_dashForce*_speed);
-            // }
             _dashingTime += Time.deltaTime;
         }
         if(_dashingTime > .25){
@@ -263,47 +283,33 @@ public class Player : MonoBehaviour{
             canDash = true;
         }
     }
-     private void OnCollisionEnter2D(Collision2D collision){
-        // if (collision.gameObject.CompareTag("Floor")){
-        //     _gravityScale = 3;
-        //     jumping = false;
-        //     _falling = false;
-        //     isGrounded = true;
-        //     jumped = false;
-        // }
-        if(collision.gameObject.CompareTag("Wall")){
-            canWallJump = true;
-            _wallpoint = collision.GetContact(0);
-            // Debug.DrawRay(_wallpoint.point, _wallpoint.normal, Color.green, 20, false);
+
+    void Respawn(){
+        horizontalInputBool = true;
+        if(SpawnIndex._spawnindex == 1){
+            transform.position = spawnPoint2.position;
+            transform.rotation = spawnPoint2.rotation;
         }
-        // if(collision.gameObject.CompareTag("Plataforma")){
-        //     _gravityScale = 3;
-        //     jumping = false;
-        //     _falling = false;
-        //     isGrounded = true;
-        //     jumped = false;
-        // }
-        if(collision.gameObject.CompareTag("Spikes")){
+        else{
             transform.position = spawnPoint.position;
             transform.rotation = spawnPoint.rotation;
-            rb2d.velocity = Vector2.zero;
-            rb2d.angularVelocity = 0f;
         }
+        _animator.SetTrigger("Respawn");
     }
-    private void OnCollisionExit2D(Collision2D collision){
-        if(collision.gameObject.CompareTag("Wall")){
-            canWallJump = false;
+    void Alive(){
+        horizontalInputBool = true;
+    }
+     private void OnCollisionEnter2D(Collision2D collision){
+        if(collision.gameObject.CompareTag("Spikes")){
+            _animator.SetTrigger("Death");
+            soundSource.PlayOneShot(_sound_death);
+            horizontalInputBool = false;
         }
-        // if(collision.gameObject.CompareTag("Floor")){
-        //     isGrounded = false;
-        // }
-        // if(collision.gameObject.CompareTag("Plataforma")){
-        //     isGrounded = false;
-        // }
     }
     private void OnTriggerEnter2D(Collider2D collision){
         if(collision.gameObject.CompareTag("exit")){
             _scene = collision.gameObject.GetComponent<Exit>()._new_scene; 
+            SpawnIndex._spawnindex = collision.gameObject.GetComponent<Exit>()._spawn;
             SceneManager.LoadScene(_scene);
         }
     }

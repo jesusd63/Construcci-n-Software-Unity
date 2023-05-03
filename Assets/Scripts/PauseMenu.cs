@@ -1,23 +1,52 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
+<<<<<<< HEAD
 using UnityEngine.SceneManagement;
-public class PauseMenu: MonoBehaviour{
-    [SerializeField] private GameObject _pauseMenu;
-    [SerializeField] private GameObject _pausebutton; 
-    public void QuitGame(){
-    Application.Quit();
+
+public class PauseMenu : MonoBehaviour
+{
+    public static bool _paused = false;
+    public GameObject pauseMenu;
+
+    // Update is called once per frame
+    void Update()
+    {
+        if(Input.GetButtonDown("Cancel")){
+            if(_paused == true){
+                Resume();
+            }
+            else{
+                Pause();
+            }
+        }
     }
-    public void Menu(){
-    SceneManager.LoadScene("Inicio");
+
+    public void Resume(){
+        pauseMenu.SetActive(false);
+        Time.timeScale = 1;
+        _paused = false;
     }
-    public void PauseButton(){
-    Time.timeScale = 0.0f;
+
+    public void Pause(){
+        pauseMenu.SetActive(true);
+        Time.timeScale = 0;
+        _paused = true;
     }
-    public void ResumeButton(){
-    Time.timeScale = 1.0f;
-    _pauseMenu.SetActive(false);
-    _pausebutton.SetActive(true);
+
+    public void Restart(){
+        pauseMenu.SetActive(false);
+        Time.timeScale = 1;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void Inicio(){
+        pauseMenu.SetActive(false);
+        Time.timeScale = 1;
+        SceneManager.LoadScene("Inicio");
+    }
+
+    public void Quit(){
+        Application.Quit();
     }
 }
